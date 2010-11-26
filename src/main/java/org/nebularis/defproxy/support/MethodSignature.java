@@ -10,7 +10,7 @@ import java.lang.reflect.Method;
 /**
  * Method signature (not calling convention).
  */
-public class MethodSignature {
+public final class MethodSignature {
     private final Class<?> returnType;
     private final String name;
     private final Class<?>[] parameterTypes;
