@@ -39,6 +39,7 @@ public class WhatTheHellAreWeDoing {
                     private final Object delegate = delegateObject;
                     @Override
                     public Object invoke(Object o, Method method, Object[] objects) throws Throwable {
+                        // handlerConfiguration.getMethodInvoker(method).handleInvocation(delegate, objects);
                         return ((MyDelegate) delegate).getName();
                     }
                 };

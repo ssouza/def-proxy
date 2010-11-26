@@ -58,4 +58,10 @@ public class MethodSignatureValidatorTestCase {
         final MethodSignatureValidator validator = new MethodSignatureValidator(FooBar.class);
         assertThat(validator.check(Boolean.class, "checkCompatibility", Baz.class), is(equalTo(true)));
     }
+
+    @Test
+    public void overloadedMethodSignaturesWillPassValidation() {
+        final MethodSignatureValidator validator = new MethodSignatureValidator(FooBar.class);
+        assertThat(validator.check(boolean.class, "checkCompatibility", FooBar.class, String.class), is(equalTo(true)));
+    }
 }

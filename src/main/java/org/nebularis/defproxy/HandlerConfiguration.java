@@ -1,15 +1,22 @@
 package org.nebularis.defproxy;
 
+import org.nebularis.defproxy.support.MethodInvoker;
+import org.nebularis.defproxy.support.MethodSignature;
+
+import java.lang.reflect.Method;
+
 /**
- * Configuration for 
+ * 
  */
 public class HandlerConfiguration {
 
-    public Class<?> getProxyClassForType(Class<?> classClass) {
+    // associated an invoker with a method signature
+    void registerMethodInvoker(final MethodInvoker mi, final MethodSignature sig) {
+
+    }
+
+    public MethodInvoker getMethodInvoker(final Method method) {
         return null;
     }
 
-    public Class getDelegateForProxy(Class delegateClass) {
-        return null;  //To change body of created methods use File | Settings | File Templates.
-    }
 }

@@ -5,13 +5,12 @@ import java.lang.reflect.Method;
 /**
  * The external behavioural contract for custom method invocations.
  */
-public interface MethodInvocationHandler {
+public interface MethodInvoker {
     /**
      * 
-     * @param o
-     * @param method
+     * @param delegate
      * @param objects
      * @return
      */
-    Object invoke(Object o, Method method, Object[] objects);
+    Object handleInvocation(Object delegate, Object[] objects);
 }

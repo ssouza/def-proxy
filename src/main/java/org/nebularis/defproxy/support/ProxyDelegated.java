@@ -54,5 +54,5 @@ public @interface ProxyDelegated {
      * option has been set. Otherwise, this value is required.</em>
      * @return
      */
-    Class<? extends MethodInvocationHandler> methodInvocationHandler();
+    Class<? extends MethodInvoker> methodInvocationHandler();
 }

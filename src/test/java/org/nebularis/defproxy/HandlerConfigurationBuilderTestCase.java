@@ -3,12 +3,6 @@ package org.nebularis.defproxy;
 import org.junit.Test;
 import org.nebularis.defproxy.stubs.BadProxyInterface;
 import org.nebularis.defproxy.stubs.MyDelegate;
-import org.nebularis.defproxy.stubs.MyProxyInterface;
-
-import java.lang.reflect.Method;
-
-import static org.hamcrest.CoreMatchers.*;
-import static org.junit.Assert.*;
 
 public class HandlerConfigurationBuilderTestCase {
 

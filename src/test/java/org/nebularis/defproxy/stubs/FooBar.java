@@ -20,4 +20,8 @@ public class FooBar {
         return false;
     }
 
+    public boolean checkCompatibility(final FooBar fb, final String s) {
+        return false;
+    }
+
 }
