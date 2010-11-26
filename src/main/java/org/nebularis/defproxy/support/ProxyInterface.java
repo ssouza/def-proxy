@@ -9,6 +9,14 @@ import java.lang.annotation.Target;
 
 /**
  * Provides configuration for against a specific back-end.
+ *
+ * Example:
+ * <pre>
+ *      @ProxyInterface(delegate=Bar.class)
+ *      public interface Foo {
+ *          // methods, etc .....
+ *      }
+ * </pre>
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)

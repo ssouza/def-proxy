@@ -1,23 +1,38 @@
 package org.nebularis.defproxy;
 
 import org.junit.Test;
+import org.nebularis.defproxy.stubs.BadProxyInterface;
+import org.nebularis.defproxy.stubs.MyDelegate;
+import org.nebularis.defproxy.stubs.MyProxyInterface;
 
-import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
+import java.lang.reflect.Method;
+
+import static org.hamcrest.CoreMatchers.*;
+import static org.junit.Assert.*;
 
 public class HandlerConfigurationBuilderTestCase {
 
     final HandlerConfigurationBuilder builder = new HandlerConfigurationBuilder();
 
-    @Test
-    public void foobar() {
-//TODO: Uncomment
-//        builder.addProxyInterface(Class.class);
-//        builder.addDelegate(Class.class);
-//        assertThat(builder.generateHandlerConfiguration().getProxyForType(Class.class),
-//            is(equalTo(Class.class)));
+    @Test(expected=InvalidInterfaceMappingException.class)
+    public void nonMatchingMethodSignaturesFailValidation() throws InvalidInterfaceMappingException {
+        builder.addProxyInterface(BadProxyInterface.class);
+        builder.addDelegate(MyDelegate.class);
+        builder.generateHandlerConfiguration();
     }
+
+    
+
+    /*@Test
+    public void byDefaultMethodsAreResolvedBasedOnCompleteSignature() {
+
+        builder.addProxyInterface(MyProxyInterface.class);
+        builder.addDelegate(MyDelegate.class);
+        //noinspection unchecked
+        assertThat((Class)builder.generateHandlerConfiguration().
+                getDelegateForProxy(MyProxyInterface.class), is(equalTo((Class)MyDelegate.class)));
+
+    }*/
 
 }
 
