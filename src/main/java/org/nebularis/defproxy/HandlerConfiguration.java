@@ -30,6 +30,9 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
+// Q: do I just store mappings between method sigs and invokers?
+// Q: or do I also provide factory methods for looking up the correct invoker!?
+
 /**
  * 
  */
@@ -68,6 +71,13 @@ public class HandlerConfiguration {
         cache.put(sig, mi);
     }
 
+    /**
+     * Gets a {@link org.nebularis.defproxy.support.MethodInvoker} for the supplied
+     * {@link java.lang.reflect.Method}, using the type signature to find an appropriate instance.
+     * @param method the method whose type signature you wish to use when looking up an invoker
+     * @return a {@link org.nebularis.defproxy.support.MethodInvoker} instance.
+     * @throws MethodInvocationNotSupportedException if no invoker has been registered against this <code>method</code>
+     */
     public MethodInvoker getMethodInvoker(final Method method) throws MethodInvocationNotSupportedException {
         final MethodSignature sig = MethodSignature.fromMethod(method);
         final MethodInvoker invoker = cache.get(sig);

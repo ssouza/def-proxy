@@ -26,6 +26,11 @@ package org.nebularis.defproxy;
 import org.nebularis.defproxy.support.MethodInvoker;
 import org.nebularis.defproxy.support.MethodSignature;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+
+import static org.apache.commons.beanutils.MethodUtils.getMatchingAccessibleMethod;
+
 /**
  * Default, reflection based {@link org.nebularis.defproxy.support.MethodInvoker}.
  */
@@ -39,6 +44,19 @@ class DefaultMethodInvoker implements MethodInvoker {
 
     @Override
     public Object handleInvocation(final Object delegate, final Object[] objects) {
-        return null;  //To change body of implemented methods use File | Settings | File Templates.
+        final Method method = getAccessibleMethod(delegate.getClass());
+        try {
+            return method.invoke(delegate, objects);
+
+            // TODO: proper exception handling policy
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private Method getAccessibleMethod(final Class delegate) {
+        return getMatchingAccessibleMethod(delegate, sig.getName(), sig.getParameterTypes());
     }
 }
