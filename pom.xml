@@ -149,25 +149,20 @@
                 <configuration>
                     <check>
                         <!-- TODO: Setup the guards that we want for our stuff -->
-                        <!--            <branchRate>85</branchRate>
-                       <lineRate>85</lineRate>
-                       <haltOnFailure>true</haltOnFailure>
-                       <totalBranchRate>85</totalBranchRate>
-                       <totalLineRate>85</totalLineRate>
-                       <packageLineRate>85</packageLineRate>
-                       <packageBranchRate>85</packageBranchRate>
-                       <regexes>
-                         <regex>
-                           <pattern>com.example.reallyimportant.*</pattern>
-                           <branchRate>90</branchRate>
-                           <lineRate>80</lineRate>
-                         </regex>
-                         <regex>
-                           <pattern>com.example.boringcode.*</pattern>
-                           <branchRate>40</branchRate>
-                           <lineRate>30</lineRate>
-                         </regex>
-                       </regexes> -->
+                        <branchRate>75</branchRate>
+                        <lineRate>75</lineRate>
+                        <haltOnFailure>true</haltOnFailure>
+                        <totalBranchRate>75</totalBranchRate>
+                        <totalLineRate>75</totalLineRate>
+                        <packageLineRate>75</packageLineRate>
+                        <packageBranchRate>75</packageBranchRate>
+                        <regexes>
+                            <regex>
+                                <pattern>org.nebularis.*Exception</pattern>
+                                <branchRate>0</branchRate>
+                                <lineRate>0</lineRate>
+                            </regex>
+                        </regexes>
                     </check>
                 </configuration>
                 <executions>

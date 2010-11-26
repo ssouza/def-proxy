@@ -1,5 +1,4 @@
 /*
- *
  * def-proxy
  *
  * Copyright (c) 2010-2011
@@ -26,10 +25,12 @@ package org.nebularis.defproxy;
 import org.junit.Test;
 import org.nebularis.defproxy.stubs.FooBar;
 import org.nebularis.defproxy.support.MethodInvoker;
+import org.nebularis.defproxy.support.MethodSignature;
 import org.nebularis.defproxy.test.AbstractJMockTestSupport;
 
 import java.lang.reflect.Method;
 
+import static org.hamcrest.CoreMatchers.instanceOf;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsSame.sameInstance;
@@ -55,6 +56,29 @@ public class HandlerConfigurationTestCase extends AbstractJMockTestSupport {
         final MethodInvoker mi = stub(MethodInvoker.class);
         final HandlerConfiguration hc = new HandlerConfiguration();
         hc.registerMethodInvoker(mi, m);
+
+        final MethodInvoker retrieved = hc.getMethodInvoker(m);
+        assertThat(retrieved, is(sameInstance(mi)));
+    }
+
+    @Test
+    public void implicitlyRegisteredMethodsMapToDefaultInvoker() throws NoSuchMethodException, MethodInvocationNotSupportedException {
+        final Method m = FooBar.class.getMethod("doSomething");
+        final HandlerConfiguration hc = new HandlerConfiguration();
+        hc.registerMethodInvoker(m);
+
+        final MethodInvoker retrieved = hc.getMethodInvoker(m);
+        assertThat(retrieved, is(instanceOf(DefaultMethodInvoker.class)));
+    }
+
+    @Test
+    public void methodSignaturesRegisteredMapIdenticallyToMethods() throws NoSuchMethodException, MethodInvocationNotSupportedException {
+        final Method m = FooBar.class.getMethod("doSomething");
+        final MethodSignature ms = MethodSignature.fromMethod(m);
+        final MethodInvoker mi = stub(MethodInvoker.class);
+
+        final HandlerConfiguration hc = new HandlerConfiguration();
+        hc.registerMethodInvoker(mi, ms);
 
         final MethodInvoker retrieved = hc.getMethodInvoker(m);
         assertThat(retrieved, is(sameInstance(mi)));
