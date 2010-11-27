@@ -39,7 +39,15 @@ import static org.apache.commons.beanutils.MethodUtils.getMatchingAccessibleMeth
 class DefaultMethodInvoker implements MethodInvoker {
 
     private final MethodSignature sig;
-    private ExceptionHandlingPolicy policy;
+    private ExceptionHandlingPolicy policy = new ExceptionHandlingPolicy() {
+        @Override
+        public Object handleException(final Throwable ex) throws Throwable {
+            if (ex instanceof InvocationTargetException) {
+                throw ex.getCause();
+            }
+            throw ex;
+        }
+    };
 
     public DefaultMethodInvoker(final MethodSignature sig) {
         this.sig = sig;
@@ -51,16 +59,11 @@ class DefaultMethodInvoker implements MethodInvoker {
 
     @Override
     public Object handleInvocation(final Object delegate, final Object[] params) throws Throwable {
-        final Method method = getMethodBySignature(delegate.getClass(), sig);
         try {
+            final Method method = getMethodBySignature(delegate.getClass(), sig);
             beforeInvocation(delegate, method, params);
             final Object returnValue = method.invoke(delegate, params);
             return afterInvocation(returnValue, delegate, method, params);
-        } catch (InvocationTargetException wrappedEx) {
-            if (policy != null) {
-                return policy.handleException(wrappedEx);
-            }
-            throw wrappedEx.getCause();
         } catch (Throwable e) {
             return policy.handleException(e);
         }

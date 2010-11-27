@@ -42,11 +42,25 @@ public class DefaultMethodInvokerTestCase {
     }
 
     @Test(expected = ClassCastException.class)
-    public void defaultExceptionHandlingPolicyWillReThrowUnderlyingCauseException() throws Throwable {
+    public void defaultExceptionHandlingPolicyWillReThrowCauseOfInvocationTargetExceptions() throws Throwable {
         final Delegate d = new Delegate("Phil");
         final Method method = d.getClass().getMethod("chuckToysOutOfPram");
 
         final DefaultMethodInvoker mi = new DefaultMethodInvoker(MethodSignature.fromMethod(method));
+        mi.handleInvocation(d, new Object[]{});
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void defaultExceptionHandlingPolicyWillReThrowOtherExceptions() throws Throwable {
+        final Delegate d = new Delegate("Phil");
+
+        final DefaultMethodInvoker mi = new DefaultMethodInvoker(null) {
+            @Override
+            protected Method getMethodBySignature(final Class delegate, final MethodSignature sig) {
+                throw new IllegalArgumentException();
+            }
+        };
+
         mi.handleInvocation(d, new Object[]{});
     }
 
