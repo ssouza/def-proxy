@@ -35,5 +35,5 @@ public interface MethodInvoker {
      * @param objects
      * @return
      */
-    Object handleInvocation(Object delegate, Object[] objects);
+    Object handleInvocation(Object delegate, Object[] objects) throws Throwable;
 }

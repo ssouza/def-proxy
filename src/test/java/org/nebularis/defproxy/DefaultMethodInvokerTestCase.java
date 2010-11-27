@@ -2,13 +2,15 @@ package org.nebularis.defproxy;
 
 import org.junit.Test;
 import org.nebularis.defproxy.support.MethodSignature;
-import static org.hamcrest.CoreMatchers.instanceOf;
+
+import java.lang.reflect.Method;
+
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
-import static org.hamcrest.core.IsSame.sameInstance;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import static org.nebularis.defproxy.support.ExceptionHandlingPolicy.wrapExceptions;
 
+@SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
 public class DefaultMethodInvokerTestCase {
 
     public class Delegate {
@@ -23,10 +25,14 @@ public class DefaultMethodInvokerTestCase {
         public void setName(final String name) {
             this.name = name;
         }
+
+        public void chuckToysOutOfPram() throws ClassCastException {
+            throw new ClassCastException();
+        }
     }
 
     @Test
-    public void gettingNameUsingCorrectTypeSignature() throws NoSuchMethodException {
+    public void gettingNameUsingCorrectTypeSignature() throws Throwable {
         final Delegate d = new Delegate("Phil");
         final MethodSignature sig = MethodSignature.fromMethod(d.getClass().getMethod("getName"));
         final DefaultMethodInvoker mi = new DefaultMethodInvoker(sig);
@@ -35,4 +41,22 @@ public class DefaultMethodInvokerTestCase {
         assertThat((String) result, is(equalTo("Phil")));
     }
 
+    @Test(expected = ClassCastException.class)
+    public void defaultExceptionHandlingPolicyWillReThrowUnderlyingCauseException() throws Throwable {
+        final Delegate d = new Delegate("Phil");
+        final Method method = d.getClass().getMethod("chuckToysOutOfPram");
+
+        final DefaultMethodInvoker mi = new DefaultMethodInvoker(MethodSignature.fromMethod(method));
+        mi.handleInvocation(d, new Object[]{});
+    }
+
+    @Test(expected = IllegalArgumentException.class)
+    public void suppliedExceptionHandlingPolicyWillOverrideDefault() throws Throwable {
+        final Delegate d = new Delegate("Phil");
+        final Method method = d.getClass().getMethod("chuckToysOutOfPram");
+
+        final DefaultMethodInvoker mi = new DefaultMethodInvoker(MethodSignature.fromMethod(method));
+        mi.setExceptionHandlerPolicy(wrapExceptions(IllegalArgumentException.class));
+        mi.handleInvocation(d, new Object[]{});
+    }
 }
