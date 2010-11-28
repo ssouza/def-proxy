@@ -33,5 +33,5 @@ public interface InterfaceValidator {
      * @param proxyInterface the interface type to validate
      * @param delegate the delegate object(s) to validate against 
      */
-    void validate(Class<?> proxyInterface, Object delegate) throws InvalidDelegationException;
+    void validate(Class<?> proxyInterface, Object delegate);
 }

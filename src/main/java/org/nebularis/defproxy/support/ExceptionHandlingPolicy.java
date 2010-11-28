@@ -2,6 +2,7 @@ package org.nebularis.defproxy.support;
 
 import org.apache.commons.beanutils.ConstructorUtils;
 
+import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 
 /**
