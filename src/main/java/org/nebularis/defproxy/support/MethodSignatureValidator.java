@@ -33,16 +33,6 @@ import static org.apache.commons.beanutils.MethodUtils.getMatchingAccessibleMeth
 
 public class MethodSignatureValidator {
 
-    private static final Map<Class, Class> primativeBoxedRepresentations =
-            new HashMap<Class, Class>() {{
-                put(Integer.class, int.class);
-                put(Long.class, long.class);
-                put(Short.class, short.class);
-                put(Double.class, double.class);
-                put(Boolean.class, boolean.class);
-                put(Character.class, char.class);
-            }};
-
     private final Class<?> delegateClass;
 
     public MethodSignatureValidator(final Class<?> delegateClass) {
@@ -59,7 +49,11 @@ public class MethodSignatureValidator {
         return check(void.class, methodName, inputTypes);
     }
 
-    public boolean check(Class<?> returnType, final String methodName, final Class... inputTypes) {
+    public boolean check(final MethodSignature sig) {
+        return check(sig.getReturnType(), sig.getName(), sig.getParameterTypes());
+    }
+
+    public boolean check(final Class<?> returnType, final String methodName, final Class... inputTypes) {
         final Method method = getMatchingAccessibleMethod(delegateClass, methodName, inputTypes);
         return (method != null && isAssignable(returnType, method.getReturnType()));
     }

@@ -1,4 +1,3 @@
-
 /*
  *
  * def-proxy
@@ -21,7 +20,30 @@
  * specific language governing permissions and limitations
  * under the License.
  *
- */package org.nebularis.defproxy;
+ */
+package org.nebularis.defproxy;
 
-public class InvalidInterfaceMappingException extends Exception {
+import org.nebularis.defproxy.support.MethodSignature;
+
+/**
+ * Thrown when a mapping is declared to (or from) a method that
+ * isn't valid for the supplied (interface or delegate) type.
+ */
+public class InvalidMethodMappingException extends Exception {
+
+    private final MethodSignature sig;
+    private final Class<?> targetType;
+
+    public InvalidMethodMappingException(final MethodSignature sig, final Class<?> targetType) {
+        this.sig = sig;
+        this.targetType = targetType;
+    }
+
+    public MethodSignature getInvalidMethodSignature() {
+        return sig;
+    }
+
+    public Class<?> getTargetType() {
+        return targetType;
+    }
 }

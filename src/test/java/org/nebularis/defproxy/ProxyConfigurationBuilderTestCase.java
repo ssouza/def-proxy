@@ -25,10 +25,14 @@ package org.nebularis.defproxy;
 
 import org.junit.Test;
 import org.nebularis.defproxy.stubs.Baz;
+import org.nebularis.defproxy.stubs.MyDelegate;
 import org.nebularis.defproxy.stubs.MyProxyInterface;
 import org.nebularis.defproxy.support.MethodSignature;
 
-import java.util.Collection;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class ProxyConfigurationBuilderTestCase {
 
@@ -43,7 +47,7 @@ public class ProxyConfigurationBuilderTestCase {
     }
 
     @Test(expected=IllegalArgumentException.class)
-    public void addingInterfaceMethodMappingShouldThrowForNullValues() throws InvalidInterfaceMappingException {
+    public void addingInterfaceMethodMappingShouldThrowForNullValues() throws InvalidMethodMappingException {
         final MethodSignature interfaceMethod = null;
         final MethodSignature delegateMethod = new MethodSignature(String.class, "getItemName");
         final ProxyConfigurationBuilder builder =
@@ -52,7 +56,7 @@ public class ProxyConfigurationBuilderTestCase {
     }
 
     @Test(expected=IllegalArgumentException.class)
-    public void addingDelegateMethodMappingShouldThrowForNullValues() throws InvalidInterfaceMappingException {
+    public void addingDelegateMethodMappingShouldThrowForNullValues() throws InvalidMethodMappingException {
         final MethodSignature interfaceMethod = new MethodSignature(String.class, "getName");
         final MethodSignature delegateMethod = null;
         final ProxyConfigurationBuilder builder =
@@ -60,6 +64,21 @@ public class ProxyConfigurationBuilderTestCase {
         builder.delegateMethod(interfaceMethod, delegateMethod);
     }
     
+    @Test
+    public void invalidInterfaceSignaturesWillThrow() {
+        final MethodSignature interfaceMethod = new MethodSignature(MyProxyInterface.class, "getNaame");
+        final MethodSignature delegateMethod = new MethodSignature(MyDelegate.class, "getName");
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
+        builder.delegateMethod(interfaceMethod, delegateMethod);
+        try {
+            builder.generateHandlerConfiguration();
+            fail("should not have gotten this far!");
+        } catch (InvalidMethodMappingException e) {
+            assertThat(e.getInvalidMethodSignature(), is(equalTo(interfaceMethod)));
+            assertThat((Class) e.getTargetType(), is(equalTo((Class)MyProxyInterface.class)));
+        }
+    }
 
     /*@Test
     public void byDefaultMethodsAreResolvedBasedOnCompleteSignature() {

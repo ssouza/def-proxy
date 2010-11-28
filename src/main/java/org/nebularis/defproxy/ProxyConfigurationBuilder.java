@@ -25,6 +25,10 @@ package org.nebularis.defproxy;
 
 import org.apache.commons.lang.Validate;
 import org.nebularis.defproxy.support.MethodSignature;
+import org.nebularis.defproxy.support.MethodSignatureValidator;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Builder for proxy handler configurations.
@@ -33,6 +37,8 @@ public class ProxyConfigurationBuilder {
 
     private final Class<?> interfaceClass;
     private final Class<?> delegateClass;
+    private final Map<MethodSignature, MethodSignature> directMappings =
+            new HashMap<MethodSignature, MethodSignature>();
 
     public ProxyConfigurationBuilder(final Class<?> interfaceClass, final Class<?> delegateClass) {
         Validate.notNull(interfaceClass, "Interface Class cannot be null");
@@ -41,12 +47,20 @@ public class ProxyConfigurationBuilder {
         this.delegateClass = delegateClass;
     }
 
-    public ProxyConfiguration generateHandlerConfiguration() throws InvalidInterfaceMappingException {
-        throw new InvalidInterfaceMappingException();
-    }
-
     public void delegateMethod(final MethodSignature interfaceMethod, final MethodSignature delegateMethod) {
         Validate.notNull(interfaceMethod, "Interface method cannot be null");
         Validate.notNull(delegateMethod, "Delegate method cannot be null");
+        directMappings.put(interfaceMethod, delegateMethod);
+    }
+
+    public ProxyConfiguration generateHandlerConfiguration() throws InvalidMethodMappingException {
+        final MethodSignatureValidator interfaceValidator = new MethodSignatureValidator(interfaceClass);
+        for (Map.Entry<MethodSignature, MethodSignature> entry : directMappings.entrySet()) {
+            final MethodSignature interfaceMethod = entry.getKey();
+            if (!interfaceValidator.check(interfaceMethod)) {
+                throw new InvalidMethodMappingException(interfaceMethod, interfaceClass);    
+            }
+        }
+        return new ProxyConfiguration();
     }
 }
