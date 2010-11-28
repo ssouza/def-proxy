@@ -36,10 +36,9 @@ import java.util.Map;
 /**
  * 
  */
-public class HandlerConfiguration {
+public class ProxyConfiguration {
 
-    private final Map<MethodSignature, MethodInvoker> cache =
-            new HashMap<MethodSignature, MethodInvoker>();
+    private final Map<MethodSignature, MethodInvoker> cache = new HashMap<MethodSignature, MethodInvoker>();
 
     /**
      * Registered a {@link org.nebularis.defproxy.DefaultMethodInvoker} to handle

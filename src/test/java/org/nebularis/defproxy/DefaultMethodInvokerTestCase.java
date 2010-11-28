@@ -1,6 +1,7 @@
 package org.nebularis.defproxy;
 
 import org.junit.Test;
+import org.nebularis.defproxy.support.MethodInvoker;
 import org.nebularis.defproxy.support.MethodSignature;
 
 import java.lang.reflect.Method;
@@ -12,6 +13,9 @@ import static org.nebularis.defproxy.support.ExceptionHandlingPolicy.wrapExcepti
 
 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
 public class DefaultMethodInvokerTestCase {
+
+    private final MethodSignature dummySig =
+            new MethodSignature(DefaultMethodInvoker.class, "foobar");
 
     public class Delegate {
         private String name;
@@ -72,5 +76,17 @@ public class DefaultMethodInvokerTestCase {
         final DefaultMethodInvoker mi = new DefaultMethodInvoker(MethodSignature.fromMethod(method));
         mi.setExceptionHandlerPolicy(wrapExceptions(IllegalArgumentException.class));
         mi.handleInvocation(d, new Object[]{});
+    }
+
+    @Test(expected = NoSuchMethodException.class)
+    public void missingMethodsShouldBeResolvedIntoNoSuchMethodException() throws Throwable {
+        final MethodInvoker mi = new DefaultMethodInvoker(dummySig) {
+            @Override
+            protected Method getMethodBySignature(final Class delegate, final MethodSignature sig) {
+                return null;
+            }
+        };
+
+        mi.handleInvocation(new Object(), new Object[]{});
     }
 }

@@ -61,6 +61,9 @@ class DefaultMethodInvoker implements MethodInvoker {
     public Object handleInvocation(final Object delegate, final Object[] params) throws Throwable {
         try {
             final Method method = getMethodBySignature(delegate.getClass(), sig);
+            if (method == null) {
+                throw new NoSuchMethodException(String.format("Method %s was not found.", sig.getName()));
+            }
             beforeInvocation(delegate, method, params);
             final Object returnValue = method.invoke(delegate, params);
             return afterInvocation(returnValue, delegate, method, params);

@@ -24,9 +24,8 @@
 package org.nebularis.defproxy.support;
 
 /**
- * This annotation explicitly marks a method as delegated,
- * which is only useful when you've not annotated your interface
- * as {@link org.nebularis.defproxy.support.ProxyPassThrough}.
+ * This annotation explicitly marks a method as delegated, allowing
+ * you to specify the underlying method name or provide an invocation handler class.
  */
 public @interface ProxyDelegated {
 

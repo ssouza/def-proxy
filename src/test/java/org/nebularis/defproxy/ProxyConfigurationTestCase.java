@@ -37,13 +37,13 @@ import static org.hamcrest.core.IsSame.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
-public class HandlerConfigurationTestCase extends AbstractJMockTestSupport {
+public class ProxyConfigurationTestCase extends AbstractJMockTestSupport {
 
     @Test
     public void unregisteredSignatureLookupsShouldThrow() throws NoSuchMethodException {
         final Method m = FooBar.class.getMethod("doSomething");
         try {
-            new HandlerConfiguration().getMethodInvoker(m);
+            new ProxyConfiguration().getMethodInvoker(m);
             fail("should not have arrived here without an exception being thrown");
         } catch (MethodInvocationNotSupportedException e) {
             assertThat(e.getMethod(), is(equalTo(m)));
@@ -54,7 +54,7 @@ public class HandlerConfigurationTestCase extends AbstractJMockTestSupport {
     public void onceRegisteredThenInvokerShouldBeAccessibleFromMethodSignature() throws NoSuchMethodException, MethodInvocationNotSupportedException {
         final Method m = FooBar.class.getMethod("doSomething");
         final MethodInvoker mi = stub(MethodInvoker.class);
-        final HandlerConfiguration hc = new HandlerConfiguration();
+        final ProxyConfiguration hc = new ProxyConfiguration();
         hc.registerMethodInvoker(mi, m);
 
         final MethodInvoker retrieved = hc.getMethodInvoker(m);
@@ -64,7 +64,7 @@ public class HandlerConfigurationTestCase extends AbstractJMockTestSupport {
     @Test
     public void implicitlyRegisteredMethodsMapToDefaultInvoker() throws NoSuchMethodException, MethodInvocationNotSupportedException {
         final Method m = FooBar.class.getMethod("doSomething");
-        final HandlerConfiguration hc = new HandlerConfiguration();
+        final ProxyConfiguration hc = new ProxyConfiguration();
         hc.registerMethodInvoker(m);
 
         final MethodInvoker retrieved = hc.getMethodInvoker(m);
@@ -77,7 +77,7 @@ public class HandlerConfigurationTestCase extends AbstractJMockTestSupport {
         final MethodSignature ms = MethodSignature.fromMethod(m);
         final MethodInvoker mi = stub(MethodInvoker.class);
 
-        final HandlerConfiguration hc = new HandlerConfiguration();
+        final ProxyConfiguration hc = new ProxyConfiguration();
         hc.registerMethodInvoker(mi, ms);
 
         final MethodInvoker retrieved = hc.getMethodInvoker(m);

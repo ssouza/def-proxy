@@ -30,4 +30,10 @@ package org.nebularis.defproxy.stubs;
 * Time: 12:55:04 PM
 * To change this template use File | Settings | File Templates.
 */
-public class Baz extends FooBar {}
+public class Baz extends FooBar {
+
+    public String getItemName() {
+        return "foobar";
+    }
+
+}
