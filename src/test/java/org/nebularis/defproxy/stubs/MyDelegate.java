@@ -33,4 +33,8 @@ public class MyDelegate {
     public String getName() {
         return name;
     }
+
+    public void checkIdentity(final String name, final int mode) {
+        
+    }
 }

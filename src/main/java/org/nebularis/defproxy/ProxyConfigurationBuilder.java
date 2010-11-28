@@ -36,7 +36,11 @@ import java.util.Map;
 public class ProxyConfigurationBuilder {
 
     private final Class<?> interfaceClass;
+    private final MethodSignatureValidator interfaceValidator;
+
     private final Class<?> delegateClass;
+    private final MethodSignatureValidator delegateValidator;
+
     private final Map<MethodSignature, MethodSignature> directMappings =
             new HashMap<MethodSignature, MethodSignature>();
 
@@ -45,6 +49,8 @@ public class ProxyConfigurationBuilder {
         Validate.notNull(delegateClass, "Delegate Class cannot be null");
         this.interfaceClass = interfaceClass;
         this.delegateClass = delegateClass;
+        interfaceValidator = new MethodSignatureValidator(interfaceClass);
+        delegateValidator = new MethodSignatureValidator(delegateClass);
     }
 
     public void delegateMethod(final MethodSignature interfaceMethod, final MethodSignature delegateMethod) {
@@ -54,13 +60,18 @@ public class ProxyConfigurationBuilder {
     }
 
     public ProxyConfiguration generateHandlerConfiguration() throws InvalidMethodMappingException {
-        final MethodSignatureValidator interfaceValidator = new MethodSignatureValidator(interfaceClass);
         for (Map.Entry<MethodSignature, MethodSignature> entry : directMappings.entrySet()) {
             final MethodSignature interfaceMethod = entry.getKey();
-            if (!interfaceValidator.check(interfaceMethod)) {
-                throw new InvalidMethodMappingException(interfaceMethod, interfaceClass);    
-            }
+            final MethodSignature delegateMethod = entry.getValue();
+            check(interfaceMethod, interfaceValidator, interfaceClass);
+            check(delegateMethod, delegateValidator, delegateClass);
         }
         return new ProxyConfiguration();
+    }
+
+    private void check(final MethodSignature sig, final MethodSignatureValidator validator, final Class<?> checkClass) throws InvalidMethodMappingException {
+        if (!validator.check(sig)) {
+            throw new InvalidMethodMappingException(sig, checkClass);
+        }
     }
 }

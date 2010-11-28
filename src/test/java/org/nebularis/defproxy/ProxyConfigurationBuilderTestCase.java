@@ -65,9 +65,9 @@ public class ProxyConfigurationBuilderTestCase {
     }
     
     @Test
-    public void invalidInterfaceSignaturesWillThrow() {
-        final MethodSignature interfaceMethod = new MethodSignature(MyProxyInterface.class, "getNaame");
-        final MethodSignature delegateMethod = new MethodSignature(MyDelegate.class, "getName");
+    public void invalidInterfaceMethodNamesWillThrow() {
+        final MethodSignature interfaceMethod = new MethodSignature(String.class, "getNaame");
+        final MethodSignature delegateMethod = new MethodSignature(String.class, "getName");
         final ProxyConfigurationBuilder builder =
                 new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
         builder.delegateMethod(interfaceMethod, delegateMethod);
@@ -80,23 +80,88 @@ public class ProxyConfigurationBuilderTestCase {
         }
     }
 
-    /*@Test
-    public void byDefaultMethodsAreResolvedBasedOnCompleteSignature() {
+    @Test
+    public void invalidInterfaceReturnTypesWillThrow() {
+        final MethodSignature interfaceMethod = new MethodSignature(void.class, "getName");
+        final MethodSignature delegateMethod = new MethodSignature(String.class, "getName");
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
+        builder.delegateMethod(interfaceMethod, delegateMethod);
+        try {
+            builder.generateHandlerConfiguration();
+            fail("should not have gotten this far!");
+        } catch (InvalidMethodMappingException e) {
+            assertThat(e.getInvalidMethodSignature(), is(equalTo(interfaceMethod)));
+            assertThat((Class) e.getTargetType(), is(equalTo((Class)MyProxyInterface.class)));
+        }
+    }
 
-        proxyInterface(IF1.class)
-            .delegatingTo(Del.class)
-            .delegateMethod("name")
-                .to("fooey")
-            .delegateMethod(String.class, "infinite", String.class)
-                to("m_infinite");
+    @Test
+    public void invalidInterfaceParameterTypesWillThrow() {
+        final MethodSignature interfaceMethod =
+                new MethodSignature(void.class, "checkIdentity", String.class, String.class);
+        final MethodSignature delegateMethod = new MethodSignature(String.class, "getName");
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
+        builder.delegateMethod(interfaceMethod, delegateMethod);
+        try {
+            builder.generateHandlerConfiguration();
+            fail("should not have gotten this far!");
+        } catch (InvalidMethodMappingException e) {
+            assertThat(e.getInvalidMethodSignature(), is(equalTo(interfaceMethod)));
+            assertThat((Class) e.getTargetType(), is(equalTo((Class)MyProxyInterface.class)));
+        }
+    }
 
-        builder.addProxyInterface(MyProxyInterface.class);
-        builder.addDelegate(MyDelegate.class);
-        //noinspection unchecked
-        assertThat((Class)builder.generateHandlerConfiguration().
-                getDelegateForProxy(MyProxyInterface.class), is(equalTo((Class)MyDelegate.class)));
+     @Test
+    public void invalidDelegateMethodNamesWillThrow() {
+        final MethodSignature interfaceMethod = new MethodSignature(String.class, "getName");
+        final MethodSignature delegateMethod = new MethodSignature(String.class, "getFlobby");
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
+        builder.delegateMethod(interfaceMethod, delegateMethod);
+        try {
+            builder.generateHandlerConfiguration();
+            fail("should not have gotten this far!");
+        } catch (InvalidMethodMappingException e) {
+            assertThat(e.getInvalidMethodSignature(), is(equalTo(delegateMethod)));
+            assertThat((Class) e.getTargetType(), is(equalTo((Class)MyDelegate.class)));
+        }
+    }
 
-    }*/
+    @Test
+    public void invalidDelegateReturnTypesWillThrow() {
+        final MethodSignature interfaceMethod = new MethodSignature(String.class, "getName");
+        final MethodSignature delegateMethod = new MethodSignature(void.class, "getName");
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
+        builder.delegateMethod(interfaceMethod, delegateMethod);
+        try {
+            builder.generateHandlerConfiguration();
+            fail("should not have gotten this far!");
+        } catch (InvalidMethodMappingException e) {
+            assertThat(e.getInvalidMethodSignature(), is(equalTo(delegateMethod)));
+            assertThat((Class) e.getTargetType(), is(equalTo((Class)MyDelegate.class)));
+        }
+    }
+
+    @Test
+    public void invalidDelegateParameterTypesWillThrow() {
+        final MethodSignature interfaceMethod =
+                new MethodSignature(void.class, "checkIdentity", String.class, int.class);
+        final MethodSignature delegateMethod =
+                new MethodSignature(void.class, "checkIdentity", String.class, String.class);
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
+        builder.delegateMethod(interfaceMethod, delegateMethod);
+        try {
+            builder.generateHandlerConfiguration();
+            fail("should not have gotten this far!");
+        } catch (InvalidMethodMappingException e) {
+            assertThat(e.getInvalidMethodSignature(), is(equalTo(delegateMethod)));
+            assertThat((Class) e.getTargetType(), is(equalTo((Class)MyDelegate.class)));
+        }
+    }
 
 }
 
