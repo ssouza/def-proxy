@@ -75,17 +75,34 @@ class DefaultMethodInvoker implements MethodInvoker {
             }
             final CallSite site = beforeInvocation(delegate, method, params);
             final Object returnValue = site.dispatch();
-            return afterInvocation(returnValue, delegate, method, params);
+            return afterInvocation(returnValue, site);
         } catch (Throwable e) {
             return policy.handleException(e);
         }
     }
 
+    /**
+     * Called immediately before invocation, this method <b>must</b> generate a
+     * {@link org.nebularis.defproxy.support.CallSite} for the invocation, whose
+     * return value (i.e., the result of calling {@link org.nebularis.defproxy.support.CallSite#dispatch()})
+     * will be passed to {@link org.nebularis.defproxy.DefaultMethodInvoker#afterInvocation(Object, org.nebularis.defproxy.support.CallSite)}
+     * for post-processing prior to returning it to the caller.
+     * @param delegate
+     * @param method
+     * @param params
+     * @return
+     */
     protected CallSite beforeInvocation(final Object delegate, final Method method, final Object[] params) {
         return new CallSite(method, delegate, params);
     }
 
-    protected Object afterInvocation(final Object returnValue, final Object delegate, final Method method, final Object[] params) {
+    /**
+     * Called immediately after invocation, allowing for post-processing of the return value.
+     * @param returnValue
+     * @param site
+     * @return
+     */
+    protected Object afterInvocation(final Object returnValue, final CallSite site) {
         return returnValue;
     }
 
@@ -95,7 +112,8 @@ class DefaultMethodInvoker implements MethodInvoker {
      * @param sig
      * @return
      */
-    protected Method getMethodBySignature(final Class delegate, final MethodSignature sig) {
+    /* oh for the CLR's family + assembly protection level! */
+    Method getMethodBySignature(final Class delegate, final MethodSignature sig) {
         return getMatchingAccessibleMethod(delegate, sig.getName(), sig.getParameterTypes());
     }
 }

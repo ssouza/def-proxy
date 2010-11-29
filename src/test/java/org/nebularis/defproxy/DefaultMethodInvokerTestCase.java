@@ -1,13 +1,17 @@
 package org.nebularis.defproxy;
 
 import org.junit.Test;
+import org.nebularis.defproxy.support.CallSite;
 import org.nebularis.defproxy.support.MethodInvoker;
 import org.nebularis.defproxy.support.MethodSignature;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import static java.util.Arrays.asList;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -25,9 +29,11 @@ public class DefaultMethodInvokerTestCase {
         public Delegate(final String name) {
             this.name = name;
         }
+
         public String getName() {
             return name;
         }
+
         public void setName(final String name) {
             this.name = name;
         }
@@ -55,7 +61,7 @@ public class DefaultMethodInvokerTestCase {
         final MethodSignature sig = MethodSignature.fromMethod(d.getClass().getMethod("getName"));
         final DefaultMethodInvoker mi = new DefaultMethodInvoker(sig);
 
-        final Object result = mi.handleInvocation(d, new Object[] {});
+        final Object result = mi.handleInvocation(d, new Object[]{});
         assertThat((String) result, is(equalTo("Phil")));
     }
 
@@ -104,13 +110,22 @@ public class DefaultMethodInvokerTestCase {
         mi.handleInvocation(new Object(), new Object[]{});
     }
 
-    //@Test
+    @Test
     public void templateMethodOverridesCanModifyFormalParameterList() throws Throwable {
-        final MethodSignature sig = MethodSignature.fromMethod(MapBackedObject.class.getMethod("get"));
-        final DefaultMethodInvoker mi = new DefaultMethodInvoker(sig);
+        final MethodSignature sig = MethodSignature.fromMethod(MapBackedObject.class.getMethod("get", String.class));
+        final DefaultMethodInvoker mi = new DefaultMethodInvoker(sig) {
+            @Override
+            protected CallSite beforeInvocation(final Object delegate, final Method method, final Object[] params) {
+                final List<Object> prefixedArguments = new ArrayList<Object>() {{
+                    add("foo");
+                    addAll(asList(params));
+                }};
+                return new CallSite(method, delegate, prefixedArguments.toArray());
+            }
+        };
 
         final MapBackedObject subject = new MapBackedObject("foo", "bar");
-
         final String value = (String) mi.handleInvocation(subject, new Object[]{});
+        assertThat(value, is(equalTo("bar")));
     }
 }
