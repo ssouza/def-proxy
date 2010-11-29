@@ -21,28 +21,31 @@
  * under the License.
  *
  */
-package org.nebularis.defproxy.stubs;
+package org.nebularis.defproxy.annotations;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
-* Created by IntelliJ IDEA.
-* User: t4
-* Date: Nov 26, 2010
-* Time: 12:54:53 PM
-* To change this template use File | Settings | File Templates.
-*/
-public class FooBar {
-
-    public void doSomething() {}
-    public String getNameFor(final int mapping) {
-        return null;
-    }
-    public Baz returnsSubClass() { return null; }
-    public /*check boxed wrappers will work*/ boolean checkCompatibility(final /*check co-variant args */FooBar o) {
-        return false;
-    }
-
-    public boolean checkCompatibility(final FooBar fb, final String s) {
-        return false;
-    }
-
+ * Provides configuration for against a specific back-end.
+ *
+ * Example:
+ * <pre>
+ *      @ProxyInterface(delegate=Bar.class)
+ *      public interface Foo {
+ *          // methods, etc .....
+ *      }
+ * </pre>
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@ProxyInterfaceAnnotationProvider
+public @interface ProxyInterface {
+    /**
+     * Required. The back-end to which the decorated interface will delegate.
+     * @return
+     */
+    Class<?> delegate();
 }

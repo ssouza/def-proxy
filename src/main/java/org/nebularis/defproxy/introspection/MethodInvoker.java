@@ -21,28 +21,23 @@
  * under the License.
  *
  */
-package org.nebularis.defproxy.stubs;
+package org.nebularis.defproxy.introspection;
+
+import java.lang.reflect.Method;
 
 /**
-* Created by IntelliJ IDEA.
-* User: t4
-* Date: Nov 26, 2010
-* Time: 12:54:53 PM
-* To change this template use File | Settings | File Templates.
-*/
-public class FooBar {
+ * The external behavioural contract for custom method invocations.
+ */
+public interface MethodInvoker {
 
-    public void doSomething() {}
-    public String getNameFor(final int mapping) {
-        return null;
-    }
-    public Baz returnsSubClass() { return null; }
-    public /*check boxed wrappers will work*/ boolean checkCompatibility(final /*check co-variant args */FooBar o) {
-        return false;
-    }
+    public final class NoMethodInvoker {}
 
-    public boolean checkCompatibility(final FooBar fb, final String s) {
-        return false;
-    }
-
+    /**
+     * Handles the invocation of a wrapped method, called with the supplied
+     * delegate and additional items making up the formal argument list.
+     * @param delegate
+     * @param objects
+     * @return
+     */
+    Object handleInvocation(Object delegate, Object[] objects) throws Throwable;
 }

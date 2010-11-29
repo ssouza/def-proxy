@@ -21,28 +21,27 @@
  * under the License.
  *
  */
-package org.nebularis.defproxy.stubs;
+package org.nebularis.defproxy.annotations;
+
+import java.lang.annotation.*;
 
 /**
-* Created by IntelliJ IDEA.
-* User: t4
-* Date: Nov 26, 2010
-* Time: 12:54:53 PM
-* To change this template use File | Settings | File Templates.
-*/
-public class FooBar {
-
-    public void doSomething() {}
-    public String getNameFor(final int mapping) {
-        return null;
-    }
-    public Baz returnsSubClass() { return null; }
-    public /*check boxed wrappers will work*/ boolean checkCompatibility(final /*check co-variant args */FooBar o) {
-        return false;
-    }
-
-    public boolean checkCompatibility(final FooBar fb, final String s) {
-        return false;
-    }
-
-}
+ * Provides a means for annotating an annotation
+ * to specify that it is a proxy interface provider.
+ * In this case, you must provide a delegate accessor
+ * that returns a {@link Class}.
+ *
+ * Example:
+ * <pre>
+ *      &#064;ProxyInterfaceAnnotationProvider
+ *      public @interface MyProxyInterfaceMarker {
+ *
+ *          Class&lt;?&gt; delegate();
+ *
+ *          String additionalData default "";
+ *      }
+ * </pre>
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.ANNOTATION_TYPE)
+public @interface ProxyInterfaceAnnotationProvider {}

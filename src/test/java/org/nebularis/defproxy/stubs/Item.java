@@ -1,9 +1,10 @@
 package org.nebularis.defproxy.stubs;
 
-import org.nebularis.defproxy.support.*;
+import org.nebularis.defproxy.annotations.*;
+import org.nebularis.defproxy.utils.TypeConverter;
 
 import java.util.Date;
-import static org.nebularis.defproxy.support.ProxyArguments.Direction.*;
+import static org.nebularis.defproxy.annotations.ProxyArguments.Direction.*;
 
 @ProxyInterface(delegate = StoredItem.class)
 public interface Item {

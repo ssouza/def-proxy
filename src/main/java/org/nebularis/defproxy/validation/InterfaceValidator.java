@@ -21,28 +21,17 @@
  * under the License.
  *
  */
-package org.nebularis.defproxy.stubs;
+package org.nebularis.defproxy.validation;
 
 /**
-* Created by IntelliJ IDEA.
-* User: t4
-* Date: Nov 26, 2010
-* Time: 12:54:53 PM
-* To change this template use File | Settings | File Templates.
-*/
-public class FooBar {
+ * The external behavioural contract for interface validation.
+ */
+public interface InterfaceValidator {
 
-    public void doSomething() {}
-    public String getNameFor(final int mapping) {
-        return null;
-    }
-    public Baz returnsSubClass() { return null; }
-    public /*check boxed wrappers will work*/ boolean checkCompatibility(final /*check co-variant args */FooBar o) {
-        return false;
-    }
-
-    public boolean checkCompatibility(final FooBar fb, final String s) {
-        return false;
-    }
-
+    /**
+     * Performs validation
+     * @param proxyInterface the interface type to validate
+     * @param delegate the delegate object(s) to validate against 
+     */
+    void validate(Class<?> proxyInterface, Object delegate);
 }
