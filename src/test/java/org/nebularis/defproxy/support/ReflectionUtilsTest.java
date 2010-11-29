@@ -112,6 +112,8 @@ public class ReflectionUtilsTest {
     public void nullIsNeverAssignable(Class clazz) { 
         assertFalse(isAssignable(clazz, null));
         assertFalse(isAssignable(null, clazz));
+        assertFalse(isAssignable(new Class[] { clazz } , (Class[]) null));
+        assertFalse(isAssignable((Class[])null, new Class[] { clazz }));
     }
 
 
