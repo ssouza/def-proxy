@@ -66,7 +66,7 @@ public class ProxyConfigurationBuilderTestCase {
     }
     
     @Test
-    public void invalidInterfaceMethodNamesWillThrow() {
+    public void invalidInterfaceMethodNamesWillThrow() throws MappingException {
         final MethodSignature interfaceMethod = new MethodSignature(String.class, "getNaame");
         final MethodSignature delegateMethod = new MethodSignature(String.class, "getName");
         final ProxyConfigurationBuilder builder =
@@ -82,7 +82,7 @@ public class ProxyConfigurationBuilderTestCase {
     }
 
     @Test
-    public void invalidInterfaceReturnTypesWillThrow() {
+    public void invalidInterfaceReturnTypesWillThrow() throws MappingException {
         final MethodSignature interfaceMethod = new MethodSignature(void.class, "getName");
         final MethodSignature delegateMethod = new MethodSignature(String.class, "getName");
         final ProxyConfigurationBuilder builder =
@@ -98,7 +98,7 @@ public class ProxyConfigurationBuilderTestCase {
     }
 
     @Test
-    public void invalidInterfaceParameterTypesWillThrow() {
+    public void invalidInterfaceParameterTypesWillThrow() throws MappingException {
         final MethodSignature interfaceMethod =
                 new MethodSignature(void.class, "checkIdentity", String.class, String.class);
         final MethodSignature delegateMethod = new MethodSignature(String.class, "getName");
@@ -115,7 +115,7 @@ public class ProxyConfigurationBuilderTestCase {
     }
 
      @Test
-    public void invalidDelegateMethodNamesWillThrow() {
+    public void invalidDelegateMethodNamesWillThrow() throws MappingException {
         final MethodSignature interfaceMethod = new MethodSignature(String.class, "getName");
         final MethodSignature delegateMethod = new MethodSignature(String.class, "getFlobby");
         final ProxyConfigurationBuilder builder =
@@ -131,7 +131,7 @@ public class ProxyConfigurationBuilderTestCase {
     }
 
     @Test
-    public void invalidDelegateReturnTypesWillThrow() {
+    public void invalidDelegateReturnTypesWillThrow() throws MappingException {
         final MethodSignature interfaceMethod = new MethodSignature(String.class, "getName");
         final MethodSignature delegateMethod = new MethodSignature(void.class, "getName");
         final ProxyConfigurationBuilder builder =
@@ -147,7 +147,7 @@ public class ProxyConfigurationBuilderTestCase {
     }
 
     @Test
-    public void invalidDelegateParameterTypesWillThrow() {
+    public void invalidDelegateParameterTypesWillThrow() throws MappingException{
         final MethodSignature interfaceMethod =
                 new MethodSignature(void.class, "checkIdentity", String.class, int.class);
         final MethodSignature delegateMethod =
@@ -165,7 +165,7 @@ public class ProxyConfigurationBuilderTestCase {
     }
 
     @Test
-    public void correctMappingsDoNotFail() throws InvalidMethodMappingException {
+    public void correctMappingsDoNotFail() throws MappingException {
         final MethodSignature interfaceMethod = new MethodSignature(String.class, "getName");
         final MethodSignature delegateMethod = new MethodSignature(String.class, "getName");
         final ProxyConfigurationBuilder builder =
@@ -175,7 +175,27 @@ public class ProxyConfigurationBuilderTestCase {
     }
 
     @Test(expected = IncompatibleMethodMappingException.class)
-    public void incompatibleMethodSignaturesWillThow() throws IncompatibleMethodMappingException {
+    public void mappingToMethodWithIncompatibleReturnTypeWillThrow() throws MappingException {
+        final MethodSignature interfaceMethod = new MethodSignature(String.class, "getName");
+        final MethodSignature delegateMethod = new MethodSignature(Integer.class, "getInteger");
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
+        builder.delegateMethod(interfaceMethod, delegateMethod);
+        builder.generateHandlerConfiguration();
+    }
+
+    @Test(expected = IncompatibleMethodMappingException.class)
+    public void mappingToMethodWithIncompatibleParametersWillThrow() throws MappingException {
+        final MethodSignature interfaceMethod = new MethodSignature(String.class, "getName");
+        final MethodSignature delegateMethod = new MethodSignature(String.class, "getEmptyString", Boolean.class);
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
+        builder.delegateMethod(interfaceMethod, delegateMethod);
+        builder.generateHandlerConfiguration();
+    }
+
+    @Test(expected = IncompatibleMethodMappingException.class)
+    public void incompatibleMethodSignaturesWillThrow() throws IncompatibleMethodMappingException {
         final MethodSignature interfaceMethod = new MethodSignature(String.class, "getName", Integer.class);
         final MethodSignature delegateMethod = new MethodSignature(String.class, "getName", String.class);
         verifyCompatibility(interfaceMethod, delegateMethod);

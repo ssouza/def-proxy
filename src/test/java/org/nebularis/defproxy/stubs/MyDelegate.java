@@ -34,6 +34,14 @@ public class MyDelegate {
         return name;
     }
 
+    public String getEmptyString(Boolean b) {
+        return "";
+    }
+
+    public Integer getInteger() {
+        return 1;
+    }
+
     public void checkIdentity(final String name, final int mode) {
         
     }
