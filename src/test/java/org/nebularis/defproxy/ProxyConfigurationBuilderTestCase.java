@@ -29,6 +29,7 @@ import org.nebularis.defproxy.stubs.MyDelegate;
 import org.nebularis.defproxy.stubs.MyProxyInterface;
 import org.nebularis.defproxy.support.MethodSignature;
 
+import static org.apache.commons.lang.ClassUtils.isAssignable;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
@@ -48,7 +49,6 @@ public class ProxyConfigurationBuilderTestCase {
 
     @Test(expected=IllegalArgumentException.class)
     public void addingInterfaceMethodMappingShouldThrowForNullValues() throws InvalidMethodMappingException {
-        final MethodSignature interfaceMethod = null;
         final MethodSignature delegateMethod = new MethodSignature(String.class, "getItemName");
         final ProxyConfigurationBuilder builder =
                 new ProxyConfigurationBuilder(MyProxyInterface.class, Baz.class);
@@ -163,5 +163,79 @@ public class ProxyConfigurationBuilderTestCase {
         }
     }
 
-}
+    @Test
+    public void correctMappingsDoNotFail() throws InvalidMethodMappingException {
+        final MethodSignature interfaceMethod = new MethodSignature(String.class, "getName");
+        final MethodSignature delegateMethod = new MethodSignature(String.class, "getName");
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
+        builder.delegateMethod(interfaceMethod, delegateMethod);
+        builder.generateHandlerConfiguration();
+    }
 
+    @Test(expected = IncompatibleMethodMappingException.class)
+    public void incompatibleMethodSignaturesWillThow() throws IncompatibleMethodMappingException {
+        final MethodSignature interfaceMethod = new MethodSignature(String.class, "getName", Integer.class);
+        final MethodSignature delegateMethod = new MethodSignature(String.class, "getName", String.class);
+        checkCompatibility(interfaceMethod, delegateMethod);
+    }
+
+    @Test(expected = IncompatibleMethodMappingException.class)
+    public void incompatibleWrongNumberOfParamsInMethodSignatureWillThow() throws IncompatibleMethodMappingException {
+        final MethodSignature interfaceMethod = new MethodSignature(String.class, "getName", String.class, Integer.class);
+        final MethodSignature delegateMethod = new MethodSignature(String.class, "getName", String.class);
+        checkCompatibility(interfaceMethod, delegateMethod);
+    }
+
+    @Test(expected = IncompatibleMethodMappingException.class)
+    public void incompatibleReturnTypesWillThrow() throws IncompatibleMethodMappingException {
+        final MethodSignature interfaceMethod = new MethodSignature(String.class, "getName");
+        final MethodSignature delegateMethod = new MethodSignature(Integer.class, "getName");
+        checkCompatibility(interfaceMethod, delegateMethod);
+    }
+
+    @Test
+    public void compatibleMethodSignaturesWillNotThrow() throws IncompatibleMethodMappingException {
+        final MethodSignature interfaceMethod = new MethodSignature(String.class, "getName", Integer.class);
+        final MethodSignature delegateMethod = new MethodSignature(String.class, "getName", Integer.class);
+        checkCompatibility(interfaceMethod, delegateMethod);
+    }
+
+    @Test(expected = IncompatibleMethodMappingException.class)
+    public void compatibleContraVariantReturnTypesWillThrow() throws IncompatibleMethodMappingException {
+        final MethodSignature interfaceMethod = new MethodSignature(String.class, "getName", Integer.class);
+        final MethodSignature delegateMethod = new MethodSignature(Object.class, "getName", Integer.class);
+        checkCompatibility(interfaceMethod, delegateMethod);
+    }
+
+    @Test
+    public void compatibleCovariantReturnTypesWillNotThrow() throws IncompatibleMethodMappingException {
+        final MethodSignature interfaceMethod = new MethodSignature(Object.class, "getName", Integer.class);
+        final MethodSignature delegateMethod = new MethodSignature(String.class, "getName", Integer.class);
+        checkCompatibility(interfaceMethod, delegateMethod);
+    }
+
+    @Test
+    public void compatibleCovariantParametersWillNotThrow() throws IncompatibleMethodMappingException {
+        final MethodSignature interfaceMethod = new MethodSignature(String.class, "getName", Number.class);
+        final MethodSignature delegateMethod = new MethodSignature(String.class, "getName", Integer.class);
+        checkCompatibility(interfaceMethod, delegateMethod);
+    }
+
+    @Test(expected = IncompatibleMethodMappingException.class)
+    public void compatibleContraVariantParametersWillThrow() throws IncompatibleMethodMappingException {
+        final MethodSignature interfaceMethod = new MethodSignature(String.class, "getName", Integer.class);
+        final MethodSignature delegateMethod = new MethodSignature(String.class, "getName", Number.class);
+        checkCompatibility(interfaceMethod, delegateMethod);
+    }
+
+    private void checkCompatibility(MethodSignature interfaceMethod, MethodSignature delegateMethod) throws IncompatibleMethodMappingException {
+        if (isAssignable(delegateMethod.getReturnType(), interfaceMethod.getReturnType())) {
+           if (isAssignable(delegateMethod.getParameterTypes(), interfaceMethod.getParameterTypes())) {
+               return;
+           }
+        }
+        throw new IncompatibleMethodMappingException(interfaceMethod, delegateMethod);
+    }
+
+}
