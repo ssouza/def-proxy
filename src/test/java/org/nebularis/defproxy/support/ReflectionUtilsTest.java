@@ -2,18 +2,25 @@ package org.nebularis.defproxy.support;
 
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.experimental.theories.DataPoint;
+import org.junit.experimental.theories.DataPoints;
 import org.junit.experimental.theories.Theories;
+import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
+import org.nebularis.defproxy.stubs.*;
 
 import java.lang.reflect.Field;
 
 import static junit.framework.Assert.assertFalse;
 import static junit.framework.Assert.assertTrue;
+import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.junit.Assert.assertSame;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.core.IsNot.not;
+import static org.junit.Assert.*;
+import static org.junit.Assume.assumeThat;
 import static org.nebularis.defproxy.support.ReflectionUtils.isAssignable;
+import static org.nebularis.defproxy.support.ReflectionUtils.primitiveForOrSame;
 
 /**
  * User: carecx
@@ -21,14 +28,43 @@ import static org.nebularis.defproxy.support.ReflectionUtils.isAssignable;
  */
 @RunWith(Theories.class)
 public class ReflectionUtilsTest {
-    private static final Class<Object> OBJ = Object.class;
-    private static final Class<String> STR = String.class;
 
-    // TODO convert to theories
+    @DataPoint
+    public static final Class<?> OBJ = Object.class;
+
+    @DataPoint
+    public static final Class<?> STR = String.class;
+
+    @DataPoint
+    public static final Class<?> NUM = Number.class;
+
+    @DataPoint
+    public static final Class<?> CHARSEQ = CharSequence.class;
+
+    @DataPoints
+    public static final Class[] PRIMITIVE_CLASSES = {
+            Integer.class,
+            Long.class,
+            Double.class,
+            Float.class,
+            Character.class,
+            Boolean.class,
+            Short.class,
+            Byte.class
+    };
+
+    @DataPoints
+    public static final Class[] CUSTOM_TEST_CLASSES = {
+            BadProxyInterface.class,
+            Baz.class,
+            FooBar.class,
+            MyDelegate.class,
+            MyProxyInterface.class
+    };
+
     @Test
     public void testSameClassIsAssignable() {
         assertTrue(isAssignable(OBJ, OBJ));
-        assertTrue(isAssignable(STR, STR));
     }
 
     @Test
@@ -43,5 +79,40 @@ public class ReflectionUtilsTest {
         assertTrue(isAssignable(Integer.TYPE, Integer.class));
         assertTrue(isAssignable(Integer.TYPE, Integer.TYPE));
     }
-    
+
+    @Test
+    public void testPrimitiveFor() {                               
+        assertSame(Integer.TYPE, primitiveForOrSame(Integer.class));
+        assertSame(Integer.TYPE, primitiveForOrSame(Integer.TYPE));
+        assertSame(OBJ, primitiveForOrSame(OBJ));
+    }
+
+    @Theory
+    public void verifyPrimitiveClassesAreAssignableToTheirWrappers(Class clazz) {
+        final Class<? extends Object> primitiveClass = primitiveForOrSame(clazz);
+        assumeThat(primitiveClass, is(not(sameInstance(clazz))));
+        assertTrue(isAssignable(clazz, primitiveClass));
+        assertTrue(isAssignable(primitiveClass, clazz));
+        assertTrue(isAssignable(primitiveClass, primitiveClass));
+    }
+
+    @Theory
+    public void classesAreAlwaysAssignableToThemselves(Class clazz) {
+        assertTrue(isAssignable(clazz, clazz));
+    }
+
+    @Theory
+    public void isAssignableBehavesNormallyForNonPrimitives(Class clazzA, Class clazzB) {
+        assumeThat(clazzA, is(not(equalTo(clazzB))));
+        assumeThat(clazzA.isAssignableFrom(clazzB), is(equalTo(true)));
+        assertTrue(isAssignable(clazzA, clazzB));
+    }
+
+    @Theory
+    public void nullIsNeverAssignable(Class clazz) { 
+        assertFalse(isAssignable(clazz, null));
+        assertFalse(isAssignable(null, clazz));
+    }
+
+
 }

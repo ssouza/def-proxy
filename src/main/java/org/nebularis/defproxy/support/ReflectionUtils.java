@@ -8,23 +8,25 @@ public class ReflectionUtils {
     }
 
     public static boolean isAssignable(final Class<?> expectedReturnType, final Class<?> methodReturnType) {
+        if (expectedReturnType == null || methodReturnType == null) {
+            return false;
+        }
         final boolean straightCheck = ClassUtils.isAssignable(methodReturnType, expectedReturnType);
         if (!straightCheck) {
             if (methodReturnType.isPrimitive()) {
-                return boxAndCompare(expectedReturnType, methodReturnType);
+                return ClassUtils.isAssignable(methodReturnType, primitiveForOrSame(expectedReturnType));
             } else if (expectedReturnType.isPrimitive()) {
-                return boxAndCompare(methodReturnType, expectedReturnType);
-            }
+                return ClassUtils.isAssignable(expectedReturnType, primitiveForOrSame(methodReturnType));
+            } 
         }
         return straightCheck;
     }
 
-    private static boolean boxAndCompare(Class<?> expectedReturnType, Class<?> methodReturnType) {
+    static <T> Class<? extends T> primitiveForOrSame(Class<T> clazz) {
         try {
-            final Class metaExpectedType = (Class) expectedReturnType.getField("TYPE").get(expectedReturnType);
-            return isAssignable(methodReturnType, metaExpectedType);
+            return (Class<? extends T>) clazz.getField("TYPE").get(clazz);
         } catch (Exception e) {
-            return false;
+            return clazz;
         }
     }
 
