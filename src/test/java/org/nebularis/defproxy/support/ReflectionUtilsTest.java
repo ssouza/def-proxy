@@ -81,7 +81,7 @@ public class ReflectionUtilsTest {
     }
 
     @Test
-    public void testPrimitiveFor() {                               
+    public void testPrimitiveForOrSame() {                               
         assertSame(Integer.TYPE, primitiveForOrSame(Integer.class));
         assertSame(Integer.TYPE, primitiveForOrSame(Integer.TYPE));
         assertSame(OBJ, primitiveForOrSame(OBJ));
