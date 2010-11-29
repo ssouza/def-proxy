@@ -5,6 +5,8 @@ import org.nebularis.defproxy.support.MethodInvoker;
 import org.nebularis.defproxy.support.MethodSignature;
 
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.Is.is;
@@ -32,6 +34,18 @@ public class DefaultMethodInvokerTestCase {
 
         public void chuckToysOutOfPram() throws ClassCastException {
             throw new ClassCastException();
+        }
+    }
+
+    public class MapBackedObject {
+        private final Map<String, String> map = new HashMap<String, String>();
+
+        public MapBackedObject(final String name, final String value) {
+            map.put(name, value);
+        }
+
+        public String get(final String name) {
+            return map.get(name);
         }
     }
 
@@ -88,5 +102,15 @@ public class DefaultMethodInvokerTestCase {
         };
 
         mi.handleInvocation(new Object(), new Object[]{});
+    }
+
+    //@Test
+    public void templateMethodOverridesCanModifyFormalParameterList() throws Throwable {
+        final MethodSignature sig = MethodSignature.fromMethod(MapBackedObject.class.getMethod("get"));
+        final DefaultMethodInvoker mi = new DefaultMethodInvoker(sig);
+
+        final MapBackedObject subject = new MapBackedObject("foo", "bar");
+
+        final String value = (String) mi.handleInvocation(subject, new Object[]{});
     }
 }

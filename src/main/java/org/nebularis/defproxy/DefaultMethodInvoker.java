@@ -23,6 +23,7 @@
  */
 package org.nebularis.defproxy;
 
+import org.nebularis.defproxy.support.CallSite;
 import org.nebularis.defproxy.support.ExceptionHandlingPolicy;
 import org.nebularis.defproxy.support.MethodInvoker;
 import org.nebularis.defproxy.support.MethodSignature;
@@ -72,20 +73,21 @@ class DefaultMethodInvoker implements MethodInvoker {
             if (method == null) {
                 throw new NoSuchMethodException(String.format("Method %s was not found.", sig.getName()));
             }
-            beforeInvocation(delegate, method, params);
-            final Object returnValue = method.invoke(delegate, params);
+            final CallSite site = beforeInvocation(delegate, method, params);
+            final Object returnValue = site.dispatch();
             return afterInvocation(returnValue, delegate, method, params);
         } catch (Throwable e) {
             return policy.handleException(e);
         }
     }
 
+    protected CallSite beforeInvocation(final Object delegate, final Method method, final Object[] params) {
+        return new CallSite(method, delegate, params);
+    }
+
     protected Object afterInvocation(final Object returnValue, final Object delegate, final Method method, final Object[] params) {
         return returnValue;
     }
-
-
-    protected void beforeInvocation(final Object delegate, final Method method, final Object[] params) {}
 
     /**
      * Gets the correct method from the supplied class using the supplied method signature.
