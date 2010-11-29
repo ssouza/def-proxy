@@ -11,15 +11,21 @@ public class ReflectionUtils {
         final boolean straightCheck = ClassUtils.isAssignable(methodReturnType, expectedReturnType);
         if (!straightCheck) {
             if (methodReturnType.isPrimitive()) {
-                try {
-                    final Class metaType = (Class) expectedReturnType.getField("TYPE").get(expectedReturnType);
-                    return isAssignable(methodReturnType, metaType);
-                } catch (Exception e) {
-                    return false;
-                }
+                return boxAndCompare(expectedReturnType, methodReturnType);
+            } else if (expectedReturnType.isPrimitive()) {
+                return boxAndCompare(methodReturnType, expectedReturnType);
             }
         }
         return straightCheck;
+    }
+
+    private static boolean boxAndCompare(Class<?> expectedReturnType, Class<?> methodReturnType) {
+        try {
+            final Class metaExpectedType = (Class) expectedReturnType.getField("TYPE").get(expectedReturnType);
+            return isAssignable(methodReturnType, metaExpectedType);
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     public static boolean isAssignable(Class[] classArray, Class[] toClassArray) {
