@@ -14,10 +14,8 @@ public interface Item {
     String barcode();
 
     @ProxyDelegated(methodName = "get")
-    @ProxyArguments(value = {"bar-code"}, direction = Prefix)
-    @ProxyTypeConverter(provider = TypeConverter.class)
+    @ProxyArguments(value = {"product-id"}, direction = Prefix)
+    @ProxyTypeConverter(provider = IntOfStringConverter.class)
     int productId();
-
-    Date displayUntil();
 
 }
