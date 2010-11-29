@@ -26,8 +26,6 @@ package org.nebularis.defproxy.support;
 import org.apache.commons.lang.ClassUtils;
 
 import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Map;
 
 import static org.apache.commons.beanutils.MethodUtils.getMatchingAccessibleMethod;
 

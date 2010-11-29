@@ -30,6 +30,8 @@ import org.nebularis.defproxy.support.MethodSignatureValidator;
 import java.util.HashMap;
 import java.util.Map;
 
+import static org.apache.commons.lang.ClassUtils.isAssignable;
+
 /**
  * Builder for proxy handler configurations.
  */
@@ -73,5 +75,14 @@ public class ProxyConfigurationBuilder {
         if (!validator.check(sig)) {
             throw new InvalidMethodMappingException(sig, checkClass);
         }
+    }
+
+    static void checkCompatibility(MethodSignature interfaceMethod, MethodSignature delegateMethod) throws IncompatibleMethodMappingException {
+        if (isAssignable(delegateMethod.getReturnType(), interfaceMethod.getReturnType())) {
+           if (isAssignable(delegateMethod.getParameterTypes(), interfaceMethod.getParameterTypes())) {
+               return;
+           }
+        }
+        throw new IncompatibleMethodMappingException(interfaceMethod, delegateMethod);
     }
 }
