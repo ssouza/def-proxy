@@ -104,6 +104,7 @@ public class ProxyConfigurationBuilder {
      * @throws MappingException
      */
     public ProxyConfiguration generateHandlerConfiguration() throws MappingException {
+        final ProxyConfiguration configuration = new ProxyConfiguration();
         for (Map.Entry<MethodSignature, MethodSignature> entry : directMappings.entrySet()) {
             final MethodSignature interfaceMethod = entry.getKey();
             final MethodSignature delegateMethod = entry.getValue();
@@ -111,7 +112,7 @@ public class ProxyConfigurationBuilder {
             check(delegateMethod, delegateValidator, delegateClass);
             checkCompatibility(interfaceMethod, delegateMethod);
         }
-        return new ProxyConfiguration();
+        return configuration;
     }
 
     private void check(final MethodSignature sig, final MethodSignatureValidator validator, final Class<?> checkClass) throws InvalidMethodMappingException {

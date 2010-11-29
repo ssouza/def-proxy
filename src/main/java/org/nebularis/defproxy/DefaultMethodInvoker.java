@@ -53,6 +53,14 @@ class DefaultMethodInvoker implements MethodInvoker {
         this.sig = sig;
     }
 
+    public MethodSignature getMethodSignature() {
+        return sig;
+    }
+
+    public ExceptionHandlingPolicy getExceptionHandlingPolicy() {
+        return policy;
+    }
+
     public void setExceptionHandlerPolicy(final ExceptionHandlingPolicy exceptionHandlerPolicy) {
         this.policy = exceptionHandlerPolicy;
     }
@@ -75,6 +83,7 @@ class DefaultMethodInvoker implements MethodInvoker {
     protected Object afterInvocation(final Object returnValue, final Object delegate, final Method method, final Object[] params) {
         return returnValue;
     }
+
 
     protected void beforeInvocation(final Object delegate, final Method method, final Object[] params) {}
 
