@@ -29,8 +29,12 @@ import java.lang.reflect.Method;
  * The external behavioural contract for custom method invocations.
  */
 public interface MethodInvoker {
+
+    public final class NoMethodInvoker {}
+
     /**
-     * 
+     * Handles the invocation of a wrapped method, called with the supplied
+     * delegate and additional items making up the formal argument list.
      * @param delegate
      * @param objects
      * @return

@@ -23,10 +23,17 @@
  */
 package org.nebularis.defproxy.support;
 
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 /**
  * This annotation explicitly marks a method as delegated, allowing
  * you to specify the underlying method name or provide an invocation handler class.
  */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.METHOD)
 public @interface ProxyDelegated {
 
     /**
@@ -76,5 +83,5 @@ public @interface ProxyDelegated {
      * option has been set. Otherwise, this value is required.</em>
      * @return
      */
-    Class<? extends MethodInvoker> methodInvocationHandler();
+    Class<? extends MethodInvoker> methodInvocationHandler() default MethodInvoker.class;
 }

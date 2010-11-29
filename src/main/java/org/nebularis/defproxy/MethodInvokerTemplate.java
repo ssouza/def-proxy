@@ -66,6 +66,9 @@ public class MethodInvokerTemplate implements MethodInvoker {
         this.policy = exceptionHandlerPolicy;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public final Object handleInvocation(final Object delegate, final Object[] params) throws Throwable {
         try {
@@ -112,7 +115,7 @@ public class MethodInvokerTemplate implements MethodInvoker {
      * @param sig
      * @return
      */
-    /* oh for the CLR's family + assembly protection level! */
+    /* oh for the CLR's assembly protection level! */
     Method getMethodBySignature(final Class delegate, final MethodSignature sig) {
         return getMatchingAccessibleMethod(delegate, sig.getName(), sig.getParameterTypes());
     }
