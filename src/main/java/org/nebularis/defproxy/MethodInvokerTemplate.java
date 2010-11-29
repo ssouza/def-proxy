@@ -37,7 +37,7 @@ import static org.apache.commons.beanutils.MethodUtils.getMatchingAccessibleMeth
  * Default, reflection based {@link org.nebularis.defproxy.support.MethodInvoker},
  * providing additional support for template methods.
  */
-class DefaultMethodInvoker implements MethodInvoker {
+public class MethodInvokerTemplate implements MethodInvoker {
 
     private final MethodSignature sig;
     private ExceptionHandlingPolicy policy = new ExceptionHandlingPolicy() {
@@ -50,7 +50,7 @@ class DefaultMethodInvoker implements MethodInvoker {
         }
     };
 
-    public DefaultMethodInvoker(final MethodSignature sig) {
+    public MethodInvokerTemplate(final MethodSignature sig) {
         this.sig = sig;
     }
 
@@ -67,7 +67,7 @@ class DefaultMethodInvoker implements MethodInvoker {
     }
 
     @Override
-    public Object handleInvocation(final Object delegate, final Object[] params) throws Throwable {
+    public final Object handleInvocation(final Object delegate, final Object[] params) throws Throwable {
         try {
             final Method method = getMethodBySignature(delegate.getClass(), sig);
             if (method == null) {
@@ -85,7 +85,7 @@ class DefaultMethodInvoker implements MethodInvoker {
      * Called immediately before invocation, this method <b>must</b> generate a
      * {@link org.nebularis.defproxy.support.CallSite} for the invocation, whose
      * return value (i.e., the result of calling {@link org.nebularis.defproxy.support.CallSite#dispatch()})
-     * will be passed to {@link org.nebularis.defproxy.DefaultMethodInvoker#afterInvocation(Object, org.nebularis.defproxy.support.CallSite)}
+     * will be passed to {@link MethodInvokerTemplate#afterInvocation(Object, org.nebularis.defproxy.support.CallSite)}
      * for post-processing prior to returning it to the caller.
      * @param delegate
      * @param method

@@ -68,7 +68,7 @@ public class ProxyConfigurationTestCase extends AbstractJMockTestSupport {
         hc.registerMethodInvoker(m);
 
         final MethodInvoker retrieved = hc.getMethodInvoker(m);
-        assertThat(retrieved, is(instanceOf(DefaultMethodInvoker.class)));
+        assertThat(retrieved, is(instanceOf(MethodInvokerTemplate.class)));
     }
 
     @Test

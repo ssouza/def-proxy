@@ -18,10 +18,10 @@ import static org.junit.Assert.assertThat;
 import static org.nebularis.defproxy.support.ExceptionHandlingPolicy.wrapExceptions;
 
 @SuppressWarnings({"ThrowableResultOfMethodCallIgnored"})
-public class DefaultMethodInvokerTestCase {
+public class MethodInvokerTemplateTestCase {
 
     private final MethodSignature dummySig =
-            new MethodSignature(DefaultMethodInvoker.class, "foobar");
+            new MethodSignature(MethodInvokerTemplate.class, "foobar");
 
     public class Delegate {
         private String name;
@@ -59,7 +59,7 @@ public class DefaultMethodInvokerTestCase {
     public void gettingNameUsingCorrectTypeSignature() throws Throwable {
         final Delegate d = new Delegate("Phil");
         final MethodSignature sig = MethodSignature.fromMethod(d.getClass().getMethod("getName"));
-        final DefaultMethodInvoker mi = new DefaultMethodInvoker(sig);
+        final MethodInvokerTemplate mi = new MethodInvokerTemplate(sig);
 
         final Object result = mi.handleInvocation(d, new Object[]{});
         assertThat((String) result, is(equalTo("Phil")));
@@ -70,7 +70,7 @@ public class DefaultMethodInvokerTestCase {
         final Delegate d = new Delegate("Phil");
         final Method method = d.getClass().getMethod("chuckToysOutOfPram");
 
-        final DefaultMethodInvoker mi = new DefaultMethodInvoker(MethodSignature.fromMethod(method));
+        final MethodInvokerTemplate mi = new MethodInvokerTemplate(MethodSignature.fromMethod(method));
         mi.handleInvocation(d, new Object[]{});
     }
 
@@ -78,7 +78,7 @@ public class DefaultMethodInvokerTestCase {
     public void defaultExceptionHandlingPolicyWillReThrowOtherExceptions() throws Throwable {
         final Delegate d = new Delegate("Phil");
 
-        final DefaultMethodInvoker mi = new DefaultMethodInvoker(null) {
+        final MethodInvokerTemplate mi = new MethodInvokerTemplate(null) {
             @Override
             protected Method getMethodBySignature(final Class delegate, final MethodSignature sig) {
                 throw new IllegalArgumentException();
@@ -93,14 +93,14 @@ public class DefaultMethodInvokerTestCase {
         final Delegate d = new Delegate("Phil");
         final Method method = d.getClass().getMethod("chuckToysOutOfPram");
 
-        final DefaultMethodInvoker mi = new DefaultMethodInvoker(MethodSignature.fromMethod(method));
+        final MethodInvokerTemplate mi = new MethodInvokerTemplate(MethodSignature.fromMethod(method));
         mi.setExceptionHandlerPolicy(wrapExceptions(IllegalArgumentException.class));
         mi.handleInvocation(d, new Object[]{});
     }
 
     @Test(expected = NoSuchMethodException.class)
     public void missingMethodsShouldBeResolvedIntoNoSuchMethodException() throws Throwable {
-        final MethodInvoker mi = new DefaultMethodInvoker(dummySig) {
+        final MethodInvoker mi = new MethodInvokerTemplate(dummySig) {
             @Override
             protected Method getMethodBySignature(final Class delegate, final MethodSignature sig) {
                 return null;
@@ -113,7 +113,7 @@ public class DefaultMethodInvokerTestCase {
     @Test
     public void templateMethodOverridesCanModifyFormalParameterList() throws Throwable {
         final MethodSignature sig = MethodSignature.fromMethod(MapBackedObject.class.getMethod("get", String.class));
-        final DefaultMethodInvoker mi = new DefaultMethodInvoker(sig) {
+        final MethodInvokerTemplate mi = new MethodInvokerTemplate(sig) {
             @Override
             protected CallSite beforeInvocation(final Object delegate, final Method method, final Object[] params) {
                 final List<Object> prefixedArguments = new ArrayList<Object>() {{

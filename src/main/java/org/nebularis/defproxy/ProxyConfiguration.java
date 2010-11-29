@@ -41,13 +41,13 @@ public class ProxyConfiguration {
     private final Map<MethodSignature, MethodInvoker> cache = new HashMap<MethodSignature, MethodInvoker>();
 
     /**
-     * Registered a {@link org.nebularis.defproxy.DefaultMethodInvoker} to handle
+     * Registered a {@link MethodInvokerTemplate} to handle
      * calls to <code>method</code>.
      * @param method the method to register handling for
      */
     void registerMethodInvoker(final Method method) {
         final MethodSignature sig = MethodSignature.fromMethod(method);
-        registerMethodInvoker(new DefaultMethodInvoker(sig), sig);
+        registerMethodInvoker(new MethodInvokerTemplate(sig), sig);
     }
 
     /**
