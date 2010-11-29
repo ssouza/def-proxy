@@ -55,12 +55,54 @@ public class ProxyConfigurationBuilder {
         delegateValidator = new MethodSignatureValidator(delegateClass);
     }
 
+    /**
+     * Gets the delegated {@link org.nebularis.defproxy.support.MethodSignature} for
+     * the supplied interface method.
+     * @param interfaceMethod
+     * @return
+     */
+    public MethodSignature getDelegatedMethod(final MethodSignature interfaceMethod) {
+        return directMappings.get(interfaceMethod);
+    }
+
+    /**
+     * Delegates calls to the supplied {@link org.nebularis.defproxy.support.MethodSignature}
+     * directly back to the delegate type, using the exact method signature supplied.
+     * @param interfaceMethod
+     */
+    public void delegateMethod(final MethodSignature interfaceMethod) {
+        delegateMethod(interfaceMethod, new MethodSignature(interfaceMethod));
+    }
+
+    /**
+     * Delegates calls to the supplied {@link org.nebularis.defproxy.support.MethodSignature}
+     * directly back to the delegate type, using the mapped method name, and the return type
+     * and parameter types of the interface method signature supplied.
+     * @param interfaceMethod
+     * @param mappedMethodName
+     */
+    public void delegateViaMethod(final MethodSignature interfaceMethod, final String mappedMethodName) {
+        delegateMethod(interfaceMethod, new MethodSignature(interfaceMethod.getReturnType(),
+                mappedMethodName, interfaceMethod.getParameterTypes()));
+    }
+
+    /**
+     * Delegates calls to the interface method, directly to the supplied delegate method.
+     * @param interfaceMethod
+     * @param delegateMethod
+     */
     public void delegateMethod(final MethodSignature interfaceMethod, final MethodSignature delegateMethod) {
         Validate.notNull(interfaceMethod, "Interface method cannot be null");
         Validate.notNull(delegateMethod, "Delegate method cannot be null");
         directMappings.put(interfaceMethod, delegateMethod);
     }
 
+    /**
+     * Generates a {@link org.nebularis.defproxy.ProxyConfiguration} for the current
+     * builder state, throwing a checked exception if the mapping is in any way incorrect.
+     * @return
+     * @throws MappingException
+     */
     public ProxyConfiguration generateHandlerConfiguration() throws MappingException {
         for (Map.Entry<MethodSignature, MethodSignature> entry : directMappings.entrySet()) {
             final MethodSignature interfaceMethod = entry.getKey();

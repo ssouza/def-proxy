@@ -47,6 +47,14 @@ public final class MethodSignature {
         this.parameterTypes = parameterTypes;
     }
 
+    /**
+     * Copy constructor
+     * @param sig
+     */
+    public MethodSignature(final MethodSignature sig) {
+        this(sig.getReturnType(), sig.getName(), sig.getParameterTypes());
+    }
+
     public static MethodSignature fromMethod(final Method method) {
         Validate.notNull(method, "method cannot be null");
         return new MethodSignature(method.getReturnType(), method.getName(), method.getParameterTypes());

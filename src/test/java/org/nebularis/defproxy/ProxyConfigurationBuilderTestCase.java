@@ -249,10 +249,39 @@ public class ProxyConfigurationBuilderTestCase {
         verifyCompatibility(interfaceMethod, delegateMethod);
     }
 
+    @Test
+    public void directMappingProducesEqualMethodSignatures() throws MappingException {
+        final MethodSignature interfaceMethod = new MethodSignature(String.class, "getName");
+        final MethodSignature delegateMethod = new MethodSignature(String.class, "getName");
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
+        builder.delegateMethod(interfaceMethod);
+        assertThat(builder.getDelegatedMethod(interfaceMethod), is(equalTo(delegateMethod)));
+    }
+
+    @Test(expected = InvalidMethodMappingException.class)
+    public void directMappingFailsForUnmatchedDelegateMethods() throws MappingException {
+        final MethodSignature interfaceMethod = new MethodSignature(String.class, "getSpecialName");
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
+        builder.delegateMethod(interfaceMethod);
+        assertThat(builder.getDelegatedMethod(interfaceMethod), is(equalTo(interfaceMethod)));
+        builder.generateHandlerConfiguration();
+    }
+
+    @Test
+    public void viaMappingFailsForUnmatchedDelegateMethods() throws MappingException {
+        final MethodSignature interfaceMethod = new MethodSignature(String.class, "getSpecialName");
+        final MethodSignature delegateMethod = new MethodSignature(String.class, "getName");
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
+        builder.delegateViaMethod(interfaceMethod, "getName");
+        assertThat(builder.getDelegatedMethod(interfaceMethod), is(equalTo(delegateMethod)));
+        builder.generateHandlerConfiguration();
+    }
+
     private void verifyCompatibility(MethodSignature interfaceMethod, MethodSignature delegateMethod) throws IncompatibleMethodMappingException {
         checkCompatibility(interfaceMethod, delegateMethod);
     }
-
-
 
 }
