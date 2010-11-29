@@ -29,7 +29,6 @@ import org.nebularis.defproxy.stubs.MyDelegate;
 import org.nebularis.defproxy.stubs.MyProxyInterface;
 import org.nebularis.defproxy.support.MethodSignature;
 
-import static org.apache.commons.lang.ClassUtils.isAssignable;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;

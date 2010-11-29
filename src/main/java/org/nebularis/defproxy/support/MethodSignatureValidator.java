@@ -23,11 +23,10 @@
  */
 package org.nebularis.defproxy.support;
 
-import org.apache.commons.lang.ClassUtils;
-
 import java.lang.reflect.Method;
 
 import static org.apache.commons.beanutils.MethodUtils.getMatchingAccessibleMethod;
+import static org.nebularis.defproxy.support.ReflectionUtils.isAssignable;
 
 public class MethodSignatureValidator {
 
@@ -54,21 +53,6 @@ public class MethodSignatureValidator {
     public boolean check(final Class<?> returnType, final String methodName, final Class... inputTypes) {
         final Method method = getMatchingAccessibleMethod(delegateClass, methodName, inputTypes);
         return (method != null && isAssignable(returnType, method.getReturnType()));
-    }
-
-    private boolean isAssignable(final Class<?> expectedReturnType, final Class<?> methodReturnType) {
-        final boolean straightCheck = ClassUtils.isAssignable(methodReturnType, expectedReturnType);
-        if (!straightCheck) {
-            if (methodReturnType.isPrimitive()) {
-                try {
-                    final Class metaType = (Class) expectedReturnType.getField("TYPE").get(expectedReturnType);
-                    return ClassUtils.isAssignable(methodReturnType, metaType);
-                } catch (Exception e) {
-                    return false;
-                } 
-            }
-        }
-        return straightCheck;
     }
 
 }
