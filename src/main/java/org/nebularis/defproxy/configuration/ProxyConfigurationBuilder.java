@@ -40,7 +40,13 @@ import java.util.Map;
 import static org.nebularis.defproxy.utils.ReflectionUtils.isAssignable;
 
 /**
- * Builder for proxy handler configurations.
+ * Builder for proxy handler configurations. You use this class to
+ * configure the wiring between your proxy interface and backing/delegate
+ * object types.
+ *
+ * The framework supports direct mappings based on method signature,
+ * variations in name, arity and argument/return types as well as
+ * custom exception handling policies.
  */
 public class ProxyConfigurationBuilder {
 
@@ -132,7 +138,7 @@ public class ProxyConfigurationBuilder {
 
             // register an invocation handler that will pass calls to the interface method on to the delegate
             final MethodInvoker invoker = new MethodInvokerTemplate(delegateMethod);
-            configuration.registerMethodInvoker(invoker, interfaceMethod);
+            configuration.registerMethodInvoker(interfaceMethod, invoker);
         }
         return configuration;
     }

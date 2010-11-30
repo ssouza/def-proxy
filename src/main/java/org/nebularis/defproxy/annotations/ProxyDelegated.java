@@ -33,6 +33,8 @@ import java.lang.annotation.Target;
 /**
  * This annotation explicitly marks a method as delegated, allowing
  * you to specify the underlying method name or provide an invocation handler class.
+ * <b>It is an error to supply both the {@link ProxyDelegated#methodName()} and
+ * {@link ProxyDelegated#methodInvocationHandler()} properties on a mapped field.</b>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
@@ -49,8 +51,7 @@ public @interface ProxyDelegated {
      *      &#064;ProxyInterface(delegate=Baz.class)
      *      public interface Foo {
      *
-     *          // this method will be resolved to a compatible signature in Baz.class
-     *          &#064;ProxyDelegated
+     *          // this method will be resolved to a fully compatible signature in Baz.class
      *          String bar(final String name, final int age);
      *
      *          // this method will be resolved to a method `String flobby(void)` in Baz.class

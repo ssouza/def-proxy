@@ -32,12 +32,34 @@ import java.lang.reflect.Method;
  * The external behavioural contract for custom method invocations.
  */
 public interface MethodInvoker {
+
+    /**
+     * Gets the {@link org.nebularis.defproxy.introspection.MethodSignature}
+     * representing the target site.
+     * @return
+     */
     MethodSignature getMethodSignature();
 
+    /**
+     * Get the {@link org.nebularis.defproxy.configuration.ExceptionHandlingPolicy}
+     * associated with this invoker.
+     * @return
+     */
     ExceptionHandlingPolicy getExceptionHandlingPolicy();
 
+    /**
+     * Sets the {@link org.nebularis.defproxy.configuration.ExceptionHandlingPolicy}
+     * associated with this invoker.
+     * @param exceptionHandlerPolicy
+     */
     void setExceptionHandlerPolicy(ExceptionHandlingPolicy exceptionHandlerPolicy);
 
+    /**
+     * Sets a {@link org.nebularis.defproxy.utils.TypeConverter} that will be
+     * used to marshal between the return type of the target site (see
+     * {@link MethodInvoker#getMethodSignature()}) and another (expected) type.
+     * @param converter
+     */
     void setTypeConverter(final TypeConverter converter);
 
     /**

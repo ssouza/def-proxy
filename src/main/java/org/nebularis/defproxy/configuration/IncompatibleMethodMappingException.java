@@ -4,11 +4,8 @@ import org.nebularis.defproxy.configuration.MappingException;
 import org.nebularis.defproxy.introspection.MethodSignature;
 
 /**
- * Created by IntelliJ IDEA.
- * User: carecx
- * Date: 29-Nov-2010
- * Time: 10:14:11
- * To change this template use File | Settings | File Templates.
+ * Thrown when two methods have incompatible signatures and no
+ * {@link org.nebularis.defproxy.utils.TypeConverter} has been specified.
  */
 public class IncompatibleMethodMappingException extends MappingException {
 

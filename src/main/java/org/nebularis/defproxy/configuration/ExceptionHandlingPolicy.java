@@ -3,7 +3,8 @@ package org.nebularis.defproxy.configuration;
 import org.apache.commons.beanutils.ConstructorUtils;
 
 /**
- *
+ * Provides an interface that {@link org.nebularis.defproxy.introspection.MethodInvoker}s
+ * use at runtime to handle boundary conditions. 
  */
 public abstract class ExceptionHandlingPolicy {
 

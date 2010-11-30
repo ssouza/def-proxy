@@ -4,7 +4,13 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ClassUtils;
 
 public class ReflectionUtils {
-    
+
+    /**
+     * Returns <code>true</code> if the methodReturnType is assignable from the expectedReturnType.
+     * @param expectedReturnType
+     * @param methodReturnType
+     * @return
+     */
     public static boolean isAssignable(final Class<?> expectedReturnType, final Class<?> methodReturnType) {
         if (expectedReturnType == null || methodReturnType == null) {
             return false;
@@ -20,14 +26,13 @@ public class ReflectionUtils {
         return straightCheck;
     }
 
-    static <T> Class<? extends T> primitiveForOrSame(Class<T> clazz) {
-        try {
-            return (Class<? extends T>) clazz.getField("TYPE").get(clazz);
-        } catch (Exception e) {
-            return clazz;
-        }
-    }
-
+    /**
+     * For each member of both class arrays, returns <code>true</code> if the
+     * type from the first array is assignable from the type taken from the second array.
+     * @param classArray
+     * @param toClassArray
+     * @return
+     */
     public static boolean isAssignable(Class[] classArray, Class[] toClassArray) {
         if (classArray == null) {
             classArray = ArrayUtils.EMPTY_CLASS_ARRAY;
@@ -44,5 +49,13 @@ public class ReflectionUtils {
             }
         }
         return true;
+    }
+
+    static <T> Class<? extends T> primitiveForOrSame(Class<T> clazz) {
+        try {
+            return (Class<? extends T>) clazz.getField("TYPE").get(clazz);
+        } catch (Exception e) {
+            return clazz;
+        }
     }
 }

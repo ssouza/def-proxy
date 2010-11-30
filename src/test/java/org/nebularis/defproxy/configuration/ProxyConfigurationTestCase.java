@@ -58,7 +58,7 @@ public class ProxyConfigurationTestCase extends AbstractJMockTestSupport {
         final Method m = FooBar.class.getMethod("doSomething");
         final MethodInvoker mi = stub(MethodInvoker.class);
         final ProxyConfiguration hc = new ProxyConfiguration();
-        hc.registerMethodInvoker(mi, m);
+        hc.registerMethodInvoker(m, mi);
 
         final MethodInvoker retrieved = hc.getMethodInvoker(m);
         assertThat(retrieved, is(sameInstance(mi)));
@@ -81,7 +81,7 @@ public class ProxyConfigurationTestCase extends AbstractJMockTestSupport {
         final MethodInvoker mi = stub(MethodInvoker.class);
 
         final ProxyConfiguration hc = new ProxyConfiguration();
-        hc.registerMethodInvoker(mi, ms);
+        hc.registerMethodInvoker(ms, mi);
 
         final MethodInvoker retrieved = hc.getMethodInvoker(m);
         assertThat(retrieved, is(sameInstance(mi)));

@@ -30,7 +30,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import java.lang.reflect.Method;
 
 /**
- * Method signature (not calling convention).
+ * Represents a method signature (though not its calling convention).
  */
 public final class MethodSignature {
     private final Class<?> returnType;
@@ -54,6 +54,12 @@ public final class MethodSignature {
         this(sig.getReturnType(), sig.getName(), sig.getParameterTypes());
     }
 
+    /**
+     * Instantiates a {@link org.nebularis.defproxy.introspection.MethodSignature}
+     * from a {@link java.lang.reflect.Method} object.
+     * @param method
+     * @return
+     */
     public static MethodSignature fromMethod(final Method method) {
         Validate.notNull(method, "method cannot be null");
         return new MethodSignature(method.getReturnType(), method.getName(), method.getParameterTypes());
@@ -81,14 +87,26 @@ public final class MethodSignature {
                 .isEquals();
     }
 
+    /**
+     * Gets the return type defined by this {@link org.nebularis.defproxy.introspection.MethodSignature}.
+     * @return
+     */
     public Class getReturnType() {
         return returnType;
     }
 
+    /**
+     * Gets the method name defined by this {@link org.nebularis.defproxy.introspection.MethodSignature}.
+     * @return
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * Gets the types of the formal parameter list defined by this {@link org.nebularis.defproxy.introspection.MethodSignature}.
+     * @return
+     */
     public Class[] getParameterTypes() {
         return parameterTypes;
     }

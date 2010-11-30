@@ -36,7 +36,11 @@ import static org.apache.commons.beanutils.MethodUtils.getMatchingAccessibleMeth
 
 /**
  * Default, reflection based {@link org.nebularis.defproxy.introspection.MethodInvoker},
- * providing additional support for template methods.
+ * providing additional support for template methods. Subclasses can override the
+ * details of the target site prior to method invocation (by overriding the
+ * {@link org.nebularis.defproxy.introspection.MethodInvokerTemplate#beforeInvocation(Object, java.lang.reflect.Method, Object[])}
+ * method), or alter the return value
+ * (overriding the {@link org.nebularis.defproxy.introspection.MethodInvokerTemplate#afterInvocation(Object, CallSite)} method).
  */
 public class MethodInvokerTemplate implements MethodInvoker {
 
@@ -56,21 +60,33 @@ public class MethodInvokerTemplate implements MethodInvoker {
         this.sig = sig;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public MethodSignature getMethodSignature() {
         return sig;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public ExceptionHandlingPolicy getExceptionHandlingPolicy() {
         return policy;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void setExceptionHandlerPolicy(final ExceptionHandlingPolicy exceptionHandlerPolicy) {
         this.policy = exceptionHandlerPolicy;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public void setTypeConverter(final TypeConverter converter) {
         this.converter = converter;
@@ -82,7 +98,7 @@ public class MethodInvokerTemplate implements MethodInvoker {
     @Override
     public final Object handleInvocation(final Object delegate, final Object[] params) throws Throwable {
         try {
-            final Method method = getMethodBySignature(delegate.getClass(), sig);
+            final Method method = getMethodBySignature(delegate.getClass(), getMethodSignature());
             if (method == null) {
                 throw new NoSuchMethodException(String.format("Method %s was not found.", sig.getName()));
             }
@@ -94,7 +110,7 @@ public class MethodInvokerTemplate implements MethodInvoker {
             }
             return afterInvocation(returnValue, site);
         } catch (Throwable e) {
-            return policy.handleException(e);
+            return getExceptionHandlingPolicy().handleException(e);
         }
     }
 

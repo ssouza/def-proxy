@@ -32,11 +32,10 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Map;
 
-// Q: do I just store mappings between method sigs and invokers?
-// Q: or do I also provide factory methods for looking up the correct invoker!?
-
 /**
- * 
+ * Holds the mapping between a {@link org.nebularis.defproxy.introspection.MethodSignature}
+ * on a proxy interface and a {@link org.nebularis.defproxy.introspection.MethodInvoker} that
+ * handles calling the delegate object behind the interface.
  */
 public class ProxyConfiguration {
 
@@ -49,26 +48,26 @@ public class ProxyConfiguration {
      */
     void registerMethodInvoker(final Method method) {
         final MethodSignature sig = MethodSignature.fromMethod(method);
-        registerMethodInvoker(new MethodInvokerTemplate(sig), sig);
+        registerMethodInvoker(sig, new MethodInvokerTemplate(sig));
     }
 
     /**
      * Registered a {@link org.nebularis.defproxy.introspection.MethodInvoker} to handle
      * calls to <code>method</code>.
-     * @param mi the {@link org.nebularis.defproxy.introspection.MethodInvoker} to register
      * @param method the method to register handling for
+     * @param mi the {@link org.nebularis.defproxy.introspection.MethodInvoker} to register
      */
-    void registerMethodInvoker(final MethodInvoker mi, final Method method) {
-        registerMethodInvoker(mi, MethodSignature.fromMethod(method));
+    void registerMethodInvoker(final Method method, final MethodInvoker mi) {
+        registerMethodInvoker(MethodSignature.fromMethod(method), mi);
     }
 
     /**
      * Registered a {@link org.nebularis.defproxy.introspection.MethodInvoker} to handle
      * calls to <code>sig</code>. 
-     * @param mi the {@link org.nebularis.defproxy.introspection.MethodInvoker} to register
      * @param sig the {@link org.nebularis.defproxy.introspection.MethodSignature} to map it to.
+     * @param mi the {@link org.nebularis.defproxy.introspection.MethodInvoker} to register
      */
-    void registerMethodInvoker(final MethodInvoker mi, final MethodSignature sig) {
+    void registerMethodInvoker(final MethodSignature sig, final MethodInvoker mi) {
         cache.put(sig, mi);
     }
 

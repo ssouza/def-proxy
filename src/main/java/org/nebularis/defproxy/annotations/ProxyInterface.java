@@ -29,14 +29,15 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Provides configuration for against a specific back-end.
+ * Maps a proxy interface to a specific back-end "delegate" class.
  *
  * Example:
  * <pre>
- *      @ProxyInterface(delegate=Bar.class)
- *      public interface Foo {
- *          // methods, etc .....
- *      }
+ * // calls to a Foo instance will be delegated to a Bar instance at runtime.
+ * &#064;ProxyInterface(delegate=Bar.class)
+ * public interface Foo {
+ *      // methods, etc .....
+ * }
  * </pre>
  */
 @Target(ElementType.TYPE)

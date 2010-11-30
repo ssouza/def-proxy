@@ -26,20 +26,25 @@ package org.nebularis.defproxy.annotations;
 import java.lang.annotation.*;
 
 /**
- * Provides a means for annotating an annotation
- * to specify that it is a proxy interface provider.
- * In this case, you must provide a delegate accessor
- * that returns a {@link Class}.
+ * Provides a means for writing your own annotation
+ * in place to the {@link org.nebularis.defproxy.annotations.ProxyInterface}
+ * marker. The primary reason for doing this would be to
+ * provide additional annotation meta data at runtime (as
+ * java annotations do not support sub-classing).
+ *
+ * When implementing your own {@link org.nebularis.defproxy.annotations.ProxyInterface}
+ * in this manner, you must at least provide an accessor with a signature
+ * fully compatible with {@link ProxyInterface#delegate()}.
  *
  * Example:
  * <pre>
- *      &#064;ProxyInterfaceAnnotationProvider
- *      public @interface MyProxyInterfaceMarker {
+ * &#064;ProxyInterfaceAnnotationProvider
+ * public @interface MyProxyInterfaceMarker {
  *
- *          Class&lt;?&gt; delegate();
+ *     Class&lt;?&gt; delegate();
  *
- *          String additionalData default "";
- *      }
+ *     String additionalData default "";
+ * }
  * </pre>
  */
 @Retention(RetentionPolicy.RUNTIME)
