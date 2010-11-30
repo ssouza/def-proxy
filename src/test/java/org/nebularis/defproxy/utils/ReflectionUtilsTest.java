@@ -52,7 +52,7 @@ public class ReflectionUtilsTest {
 
     @DataPoints
     public static final Class[] CUSTOM_TEST_CLASSES = {
-            BadProxyInterface.class,
+            SomeProxyInterface.class,
             Baz.class,
             FooBar.class,
             MyDelegate.class,

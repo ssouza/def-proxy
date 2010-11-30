@@ -26,17 +26,21 @@ package org.nebularis.defproxy.configuration;
 import org.jmock.integration.junit4.JMock;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nebularis.defproxy.annotations.Insertion;
 import org.nebularis.defproxy.introspection.MethodInvoker;
 import org.nebularis.defproxy.introspection.MethodSignature;
 import org.nebularis.defproxy.stubs.*;
 import org.nebularis.defproxy.test.AbstractJMockTestSupport;
 import org.nebularis.defproxy.utils.TypeConverter;
+import org.nebularis.defproxy.validation.MethodSignatureValidator;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
-import static org.nebularis.defproxy.configuration.ProxyConfigurationBuilder.checkCompatibility;
 
 @RunWith(JMock.class)
 public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport {
@@ -76,7 +80,7 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
                 new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
         builder.delegateMethod(interfaceMethod, delegateMethod);
         try {
-            builder.generateHandlerConfiguration();
+            builder.generateProxyConfiguration();
             fail("should not have gotten this far!");
         } catch (InvalidMethodMappingException e) {
             assertThat(e.getInvalidMethodSignature(), is(equalTo(interfaceMethod)));
@@ -92,7 +96,7 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
                 new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
         builder.delegateMethod(interfaceMethod, delegateMethod);
         try {
-            builder.generateHandlerConfiguration();
+            builder.generateProxyConfiguration();
             fail("should not have gotten this far!");
         } catch (InvalidMethodMappingException e) {
             assertThat(e.getInvalidMethodSignature(), is(equalTo(interfaceMethod)));
@@ -109,7 +113,7 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
                 new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
         builder.delegateMethod(interfaceMethod, delegateMethod);
         try {
-            builder.generateHandlerConfiguration();
+            builder.generateProxyConfiguration();
             fail("should not have gotten this far!");
         } catch (InvalidMethodMappingException e) {
             assertThat(e.getInvalidMethodSignature(), is(equalTo(interfaceMethod)));
@@ -125,7 +129,7 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
                 new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
         builder.delegateMethod(interfaceMethod, delegateMethod);
         try {
-            builder.generateHandlerConfiguration();
+            builder.generateProxyConfiguration();
             fail("should not have gotten this far!");
         } catch (InvalidMethodMappingException e) {
             assertThat(e.getInvalidMethodSignature(), is(equalTo(delegateMethod)));
@@ -141,7 +145,7 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
                 new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
         builder.delegateMethod(interfaceMethod, delegateMethod);
         try {
-            builder.generateHandlerConfiguration();
+            builder.generateProxyConfiguration();
             fail("should not have gotten this far!");
         } catch (InvalidMethodMappingException e) {
             assertThat(e.getInvalidMethodSignature(), is(equalTo(delegateMethod)));
@@ -159,7 +163,7 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
                 new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
         builder.delegateMethod(interfaceMethod, delegateMethod);
         try {
-            builder.generateHandlerConfiguration();
+            builder.generateProxyConfiguration();
             fail("should not have gotten this far!");
         } catch (InvalidMethodMappingException e) {
             assertThat(e.getInvalidMethodSignature(), is(equalTo(delegateMethod)));
@@ -174,7 +178,7 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
         final ProxyConfigurationBuilder builder =
                 new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
         builder.delegateMethod(interfaceMethod, delegateMethod);
-        builder.generateHandlerConfiguration();
+        builder.generateProxyConfiguration();
     }
 
     @Test(expected = IncompatibleMethodMappingException.class)
@@ -184,7 +188,7 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
         final ProxyConfigurationBuilder builder =
                 new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
         builder.delegateMethod(interfaceMethod, delegateMethod);
-        builder.generateHandlerConfiguration();
+        builder.generateProxyConfiguration();
     }
 
     @Test(expected = IncompatibleMethodMappingException.class)
@@ -194,7 +198,7 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
         final ProxyConfigurationBuilder builder =
                 new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
         builder.delegateMethod(interfaceMethod, delegateMethod);
-        builder.generateHandlerConfiguration();
+        builder.generateProxyConfiguration();
     }
 
     @Test(expected = IncompatibleMethodMappingException.class)
@@ -270,7 +274,7 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
                 new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
         builder.delegateMethod(interfaceMethod);
         assertThat(builder.getDelegatedMethod(interfaceMethod), is(equalTo(interfaceMethod)));
-        builder.generateHandlerConfiguration();
+        builder.generateProxyConfiguration();
     }
 
     @Test
@@ -281,7 +285,7 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
                 new ProxyConfigurationBuilder(MyProxyInterface.class, MyDelegate.class);
         builder.delegateViaMethod(interfaceMethod, "getName");
         assertThat(builder.getDelegatedMethod(interfaceMethod), is(equalTo(delegateMethod)));
-        builder.generateHandlerConfiguration();
+        builder.generateProxyConfiguration();
     }
 
     @Test
@@ -305,15 +309,115 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
 
         builder.delegateMethod(interfaceMethod, delegateMethod);
         builder.setTypeConverter(interfaceMethod, converter);
-        final ProxyConfiguration configuration = builder.generateHandlerConfiguration();
+        final ProxyConfiguration configuration = builder.generateProxyConfiguration();
         final MethodInvoker invoker = configuration.getMethodInvoker(Item.class.getMethod("productId"));
         invoker.setTypeConverter(converter);
 
         invoker.handleInvocation(item);
     }
 
-    private void verifyCompatibility(MethodSignature interfaceMethod, MethodSignature delegateMethod) throws IncompatibleMethodMappingException {
-        checkCompatibility(interfaceMethod, delegateMethod);
+    @Test
+    public void argumentOverridesSplatTargetMethodArity() throws Throwable {
+        final TypeConverter converter = mock(TypeConverter.class);
+        one(converter).getInputType();
+        will(returnValue(Object.class));
+        one(converter).getOutputType();
+        will(returnValue(Integer.class));
+        one(converter).convert(with("59"));
+        will(returnValue(59));
+        confirmExpectations();
+
+        final Map<String, String> hash = new HashMap<String, String>();
+        hash.put("product-id", "59");
+
+        final MethodSignature interfaceMethod = new MethodSignature(int.class, "productId");
+        final MethodSignature delegateMethod = new MethodSignature(Object.class, "get", Object.class);
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(Item.class, HashMap.class);
+
+        builder.delegateMethod(interfaceMethod, delegateMethod);
+        builder.wrapDelegate(Insertion.Prefix, delegateMethod, "product-id");
+        builder.setTypeConverter(interfaceMethod, converter);
+
+        final ProxyConfiguration configuration = builder.generateProxyConfiguration();
+        final MethodInvoker invoker = configuration.getMethodInvoker(Item.class.getMethod("productId"));
+        invoker.setTypeConverter(converter);
+
+        assertThat((Integer) invoker.handleInvocation(hash), is(equalTo(59)));
     }
 
+    @Test(expected = IncompatibleMethodMappingException.class)
+    public void argumentOverridesFailConstructionWhenArityDoesNotMatch() throws Throwable {
+        final TypeConverter converter = new TypeConverter() {
+            @Override
+            public Class getInputType() { return Object.class; }
+
+            @Override
+            public Class getOutputType() { return Integer.class; }
+
+            @Override
+            public Object convert(final Object o) { throw new UnsupportedOperationException(); }
+        };
+
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(Item.class, HashMap.class);
+
+        final MethodSignature interfaceMethod = new MethodSignature(int.class, "productId");
+        final MethodSignature delegateMethod = new MethodSignature(Object.class, "get", Object.class);
+
+        builder.delegateMethod(interfaceMethod, delegateMethod);
+        builder.wrapDelegate(Insertion.Prefix, delegateMethod, "product-id", "this-is-one-arg-too-many!");
+        builder.setTypeConverter(interfaceMethod, converter);
+
+        builder.generateProxyConfiguration();
+    }
+
+    @Test(expected = IncompatibleMethodMappingException.class)
+    public void argumentOverridesFailConstructionWhenTypesDoNotMatch() throws Throwable {
+        final TypeConverter converter = new TypeConverter() {
+            @Override
+            public Class getInputType() { return Object.class; }
+
+            @Override
+            public Class getOutputType() { return boolean.class; }
+
+            @Override
+            public Object convert(final Object o) { throw new UnsupportedOperationException(); }
+        };
+
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(SomeProxyInterface.class, FooBar.class);
+
+        final MethodSignature interfaceMethod = new MethodSignature(boolean.class, "strangeMethod");
+        final MethodSignature delegateMethod =
+                new MethodSignature(boolean.class, "checkCompatibility", FooBar.class, String.class);
+
+        builder.delegateMethod(interfaceMethod, delegateMethod);
+        builder.wrapDelegate(Insertion.Suffix, delegateMethod, "this-arg-is-in-the-wrong-position!", new FooBar());
+        builder.setTypeConverter(interfaceMethod, converter);
+
+        builder.generateProxyConfiguration();
+    }
+
+    private void verifyCompatibility(MethodSignature interfaceMethod, MethodSignature delegateMethod) throws IncompatibleMethodMappingException {
+        final ProxyConfigurationBuilder builder = getProxyConfigurationBuilderWithNoClassLevelChecking();
+        builder.checkCompatibility(interfaceMethod, delegateMethod);
+    }
+
+    private ProxyConfigurationBuilder getProxyConfigurationBuilderWithNoClassLevelChecking() {
+        return configureBuilderWithStubValidators(new ProxyConfigurationBuilder(Object.class, Object.class));
+    }
+
+    private ProxyConfigurationBuilder configureBuilderWithStubValidators(final ProxyConfigurationBuilder builder) {
+        final MethodSignatureValidator mock1 = mock(MethodSignatureValidator.class, "validator1");
+        final MethodSignatureValidator mock2 = mock(MethodSignatureValidator.class, "validator2");
+        ignoring(mock1);
+        ignoring(mock2);
+        confirmExpectations();
+
+        builder.setInterfaceValidator(mock1);
+        builder.setDelegateValidator(mock2);
+        return builder;
+    }
+    
 }

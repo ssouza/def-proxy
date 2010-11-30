@@ -96,7 +96,7 @@ public class MethodInvokerTemplate implements MethodInvoker {
      * @inheritDoc
      */
     @Override
-    public final Object handleInvocation(final Object delegate, final Object[] params) throws Throwable {
+    public final Object handleInvocation(final Object delegate, final Object... params) throws Throwable {
         try {
             final Method method = getMethodBySignature(delegate.getClass(), getMethodSignature());
             if (method == null) {

@@ -28,21 +28,13 @@ import java.lang.annotation.Target;
  * The optional {@link ProxyArguments#direction()} property indicates the
  * end of the formal argument list, to which the additional parameters should
  * be added (i.e., prepend or append them). It's default value of
- * {@link org.nebularis.defproxy.annotations.ProxyArguments.Direction#Prefix}
+ * {@link Insertion#Prefix}
  * indicates that the additional arguments will be passed in front of any explicitly
  * provided arguments.
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
 public @interface ProxyArguments {
-
-    /**
-     * Indicates the end of the parameter list to which additional values will be added.
-     */
-    public enum Direction {
-        Prefix(),
-        Suffix();
-    }
 
     /**
      * An array of string arguments to add to the passed parameter list.
@@ -54,5 +46,5 @@ public @interface ProxyArguments {
      * The direction in which to fix additional arguments to the existing parameter list.
      * @return
      */
-    Direction direction() default Direction.Prefix;
+    Insertion direction() default Insertion.Prefix;
 }

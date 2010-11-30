@@ -23,8 +23,8 @@
  */
 package org.nebularis.defproxy.stubs;
 
-public interface BadProxyInterface {
+public interface SomeProxyInterface {
 
-    void unmappableMethod();
+    boolean strangeMethod();
 
 }
