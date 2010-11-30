@@ -22,6 +22,32 @@
             <comments>A business-friendly OSS license</comments>
         </license>
     </licenses>
+        <developers>
+        <developer>
+            <id>hyperthunk</id>
+            <name>Tim Watson</name>
+            <email>watson dot timothy at gmail dot com</email>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>ccare</id>
+            <name>Charles Care</name>
+            <email></email>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>BoyCook</id>
+            <name>Craig Cook</name>
+            <email>boycook at me dot com</email>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+    </developers>
     <version>0.1.0-SNAPSHOT</version>
     <dependencies>
         <!-- logging -->
