@@ -399,6 +399,31 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
         builder.generateProxyConfiguration();
     }
 
+    @Test
+    public void partialArgumentOverridesResultInLooseTypeCheckingOfRemainingParameters() throws Throwable {
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(SomeProxyInterface.class, FooBar.class);
+
+        final MethodSignature interfaceMethod = new MethodSignature(boolean.class, "strangeMethod", String.class);
+        final MethodSignature delegateMethod =
+                new MethodSignature(boolean.class, "checkCompatibility", FooBar.class, String.class);
+
+        final FooBar presetFoobar = new FooBar();
+        final FooBar subject = mock(FooBar.class);
+        one(subject).checkCompatibility(with(same(presetFoobar)), with("string123"));
+        will(returnValue(true));
+        confirmExpectations();
+
+        builder.delegateMethod(interfaceMethod, delegateMethod);
+        builder.wrapDelegate(Insertion.Prefix, delegateMethod, presetFoobar /* we let string arrive at runtime! */);
+
+        final ProxyConfiguration configuration = builder.generateProxyConfiguration();
+        final MethodInvoker invoker = configuration.getMethodInvoker(
+                SomeProxyInterface.class.getMethod("strangeMethod", String.class));
+
+        assertThat((Boolean) invoker.handleInvocation(subject, "string123"), is(equalTo(true)));
+    }
+
     @Test(expected = IncompatibleMethodMappingException.class)
     public void argumentOverridesFailConstructionWhenTypesDoNotMatch() throws Throwable {
         final TypeConverter converter = new TypeConverter() {

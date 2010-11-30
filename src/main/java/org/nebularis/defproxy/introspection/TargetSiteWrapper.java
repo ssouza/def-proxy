@@ -3,6 +3,7 @@ package org.nebularis.defproxy.introspection;
 import org.nebularis.defproxy.annotations.Insertion;
 
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.List;
 
 import static java.util.Arrays.asList;
@@ -26,8 +27,8 @@ public class TargetSiteWrapper extends MethodInvokerTemplate {
     }
 
     private Object[] mergeArgumentLists(final Object[] params) {
-        final List<Object> addedParams = asList(additionalParams);
-        final List<Object> suppliedParams = asList(params);
+        final List<Object> addedParams = new ArrayList<Object>(asList(additionalParams));
+        final List<Object> suppliedParams = new ArrayList<Object>(asList(params));
         if (insertion.equals(Insertion.Prefix)) {
             addedParams.addAll(suppliedParams);
             return addedParams.toArray();

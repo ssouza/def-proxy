@@ -27,4 +27,6 @@ public interface SomeProxyInterface {
 
     boolean strangeMethod();
 
+    boolean strangeMethod(final String name);
+
 }
