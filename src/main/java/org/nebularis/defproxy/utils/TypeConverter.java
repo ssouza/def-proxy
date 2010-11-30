@@ -3,16 +3,19 @@ package org.nebularis.defproxy.utils;
 /**
  * General purpose type conversion.
  */
-public interface TypeConverter<T> {
+public interface TypeConverter<T1,T2> {
+
+    Class<? extends T1> getInputType();
+
+    Class<? extends T2> getOutputType();
 
     /**
      * Convert object <i>o</i> to type T, which is
      * classified as <code>classHint</code>.
      * @param o
-     * @param classHint
      * @return an object of type T
      * @throws 
      */
-    T convert(Object o, Class<T> classHint);
+    T2 convert(T1 o);
 
 }

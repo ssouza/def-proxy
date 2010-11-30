@@ -5,14 +5,18 @@ import java.util.Map;
 
 public class StoredItem {
 
-    private final Map<String, Object> map = new HashMap<String, Object>();
+    private final Map<String, String> map = new HashMap<String, String>();
 
-    public void set(final String name, final Object value) {
+    public void set(final String name, final String value) {
         map.put(name, value);
     }
 
-    public Object get(final String name) {
+    public String get(final String name) {
         return map.get(name);
+    }
+
+    public String getProductId() {
+        return get("productId");
     }
 
 }

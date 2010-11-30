@@ -23,13 +23,27 @@
  */
 package org.nebularis.defproxy.introspection;
 
+import org.nebularis.defproxy.configuration.ExceptionHandlingPolicy;
+import org.nebularis.defproxy.utils.TypeConverter;
+
 import java.lang.reflect.Method;
 
 /**
  * The external behavioural contract for custom method invocations.
  */
 public interface MethodInvoker {
+    MethodSignature getMethodSignature();
 
+    ExceptionHandlingPolicy getExceptionHandlingPolicy();
+
+    void setExceptionHandlerPolicy(ExceptionHandlingPolicy exceptionHandlerPolicy);
+
+    void setTypeConverter(final TypeConverter converter);
+
+    /**
+     * Final Class that represents "no method invoker" in a
+     * {@link org.nebularis.defproxy.annotations.ProxyDelegated} annotation instance.
+     */
     public final class NoMethodInvoker {}
 
     /**
@@ -39,5 +53,5 @@ public interface MethodInvoker {
      * @param objects
      * @return
      */
-    Object handleInvocation(Object delegate, Object[] objects) throws Throwable;
+    Object handleInvocation(Object delegate, Object... objects) throws Throwable;
 }

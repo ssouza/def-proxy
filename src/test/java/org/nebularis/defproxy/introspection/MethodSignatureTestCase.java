@@ -91,11 +91,6 @@ public class MethodSignatureTestCase extends ObjectEqualityAndHashCodeVerifier<M
         new MethodSignature(String.class, "method1", String.class, null, Integer.class);
     }
 
-    @Test
-    public void methodSigCanBeUsedInHashTables() {
-
-    }
-
     @DataPoint
     public static Object nil = null;
 

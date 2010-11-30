@@ -28,7 +28,10 @@ import org.nebularis.defproxy.configuration.IncompatibleMethodMappingException;
 import org.nebularis.defproxy.configuration.InvalidMethodMappingException;
 import org.nebularis.defproxy.configuration.MappingException;
 import org.nebularis.defproxy.configuration.ProxyConfiguration;
+import org.nebularis.defproxy.introspection.MethodInvoker;
+import org.nebularis.defproxy.introspection.MethodInvokerTemplate;
 import org.nebularis.defproxy.introspection.MethodSignature;
+import org.nebularis.defproxy.utils.TypeConverter;
 import org.nebularis.defproxy.validation.MethodSignatureValidator;
 
 import java.util.HashMap;
@@ -47,8 +50,8 @@ public class ProxyConfigurationBuilder {
     private final Class<?> delegateClass;
     private final MethodSignatureValidator delegateValidator;
 
-    private final Map<MethodSignature, MethodSignature> directMappings =
-            new HashMap<MethodSignature, MethodSignature>();
+    private final Map<MethodSignature, MethodSignature> directMappings = new HashMap<MethodSignature, MethodSignature>();
+    private final Map<MethodSignature, TypeConverter> conversionMappings = new HashMap<MethodSignature, TypeConverter>();
 
     public ProxyConfigurationBuilder(final Class<?> interfaceClass, final Class<?> delegateClass) {
         Validate.notNull(interfaceClass, "Interface Class cannot be null");
@@ -102,6 +105,17 @@ public class ProxyConfigurationBuilder {
     }
 
     /**
+     * Set a {@link org.nebularis.defproxy.utils.TypeConverter} for the provided interface method.
+     * Providing a converter means that the return type of the delegate method can differ from
+     * that of the underlying delegate, providing that the type converter can massage values from one to the other.
+     * @param interfaceMethod
+     * @param converter
+     */
+    public void setTypeConverter(final MethodSignature interfaceMethod, final TypeConverter converter) {
+        conversionMappings.put(interfaceMethod, converter);
+    }
+
+    /**
      * Generates a {@link org.nebularis.defproxy.configuration.ProxyConfiguration} for the current
      * builder state, throwing a checked exception if the mapping is in any way incorrect.
      * @return
@@ -114,7 +128,11 @@ public class ProxyConfigurationBuilder {
             final MethodSignature delegateMethod = entry.getValue();
             check(interfaceMethod, interfaceValidator, interfaceClass);
             check(delegateMethod, delegateValidator, delegateClass);
-            checkCompatibility(interfaceMethod, delegateMethod);
+            checkCompatibility(interfaceMethod, delegateMethod, conversionMappings);
+
+            // register an invocation handler that will pass calls to the interface method on to the delegate
+            final MethodInvoker invoker = new MethodInvokerTemplate(delegateMethod);
+            configuration.registerMethodInvoker(invoker, interfaceMethod);
         }
         return configuration;
     }
@@ -126,11 +144,25 @@ public class ProxyConfigurationBuilder {
     }
 
     static void checkCompatibility(MethodSignature interfaceMethod, MethodSignature delegateMethod) throws IncompatibleMethodMappingException {
-        if (isAssignable(interfaceMethod.getReturnType(), delegateMethod.getReturnType())) {
+        checkCompatibility(interfaceMethod, delegateMethod, null);
+    }
+
+    static void checkCompatibility(MethodSignature interfaceMethod, MethodSignature delegateMethod, final Map<MethodSignature, TypeConverter> conversionMappings) throws IncompatibleMethodMappingException {
+        if (returnTypesAreCompatible(interfaceMethod, delegateMethod, conversionMappings)) {
            if (isAssignable(interfaceMethod.getParameterTypes(), delegateMethod.getParameterTypes())) {
                return;
            }
         }
         throw new IncompatibleMethodMappingException(interfaceMethod, delegateMethod);
+    }
+
+    private static boolean returnTypesAreCompatible(final MethodSignature interfaceMethod, final MethodSignature delegateMethod, final Map<MethodSignature, TypeConverter> conversionMappings) {
+        if (conversionMappings != null && conversionMappings.containsKey(interfaceMethod)) {
+            final TypeConverter converter = conversionMappings.get(interfaceMethod);
+            if (isAssignable(delegateMethod.getReturnType(), converter.getInputType())) {
+                return isAssignable(interfaceMethod.getReturnType(), converter.getOutputType());
+            }
+        }
+        return isAssignable(interfaceMethod.getReturnType(), delegateMethod.getReturnType());
     }
 }

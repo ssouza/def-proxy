@@ -27,6 +27,7 @@ import org.nebularis.defproxy.configuration.ExceptionHandlingPolicy;
 import org.nebularis.defproxy.introspection.CallSite;
 import org.nebularis.defproxy.introspection.MethodSignature;
 import org.nebularis.defproxy.introspection.MethodInvoker;
+import org.nebularis.defproxy.utils.TypeConverter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -40,6 +41,7 @@ import static org.apache.commons.beanutils.MethodUtils.getMatchingAccessibleMeth
 public class MethodInvokerTemplate implements MethodInvoker {
 
     private final MethodSignature sig;
+    private TypeConverter converter;
     private ExceptionHandlingPolicy policy = new ExceptionHandlingPolicy() {
         @Override
         public Object handleException(final Throwable ex) throws Throwable {
@@ -54,16 +56,24 @@ public class MethodInvokerTemplate implements MethodInvoker {
         this.sig = sig;
     }
 
+    @Override
     public MethodSignature getMethodSignature() {
         return sig;
     }
 
+    @Override
     public ExceptionHandlingPolicy getExceptionHandlingPolicy() {
         return policy;
     }
 
+    @Override
     public void setExceptionHandlerPolicy(final ExceptionHandlingPolicy exceptionHandlerPolicy) {
         this.policy = exceptionHandlerPolicy;
+    }
+
+    @Override
+    public void setTypeConverter(final TypeConverter converter) {
+        this.converter = converter;
     }
 
     /**
@@ -78,6 +88,10 @@ public class MethodInvokerTemplate implements MethodInvoker {
             }
             final CallSite site = beforeInvocation(delegate, method, params);
             final Object returnValue = site.dispatch();
+            if (converter != null) {
+                //noinspection unchecked
+                return afterInvocation(converter.convert(returnValue), site);
+            }
             return afterInvocation(returnValue, site);
         } catch (Throwable e) {
             return policy.handleException(e);

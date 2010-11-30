@@ -23,15 +23,14 @@
  */
 package org.nebularis.defproxy.configuration;
 
+import org.jmock.integration.junit4.JMock;
 import org.junit.Test;
-import org.nebularis.defproxy.configuration.IncompatibleMethodMappingException;
-import org.nebularis.defproxy.configuration.InvalidMethodMappingException;
-import org.nebularis.defproxy.configuration.MappingException;
-import org.nebularis.defproxy.configuration.ProxyConfigurationBuilder;
+import org.junit.runner.RunWith;
+import org.nebularis.defproxy.introspection.MethodInvoker;
 import org.nebularis.defproxy.introspection.MethodSignature;
-import org.nebularis.defproxy.stubs.Baz;
-import org.nebularis.defproxy.stubs.MyDelegate;
-import org.nebularis.defproxy.stubs.MyProxyInterface;
+import org.nebularis.defproxy.stubs.*;
+import org.nebularis.defproxy.test.AbstractJMockTestSupport;
+import org.nebularis.defproxy.utils.TypeConverter;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
@@ -39,7 +38,8 @@ import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.nebularis.defproxy.configuration.ProxyConfigurationBuilder.checkCompatibility;
 
-public class ProxyConfigurationBuilderTestCase {
+@RunWith(JMock.class)
+public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport {
 
     @Test(expected = IllegalArgumentException.class)
     public void shouldNotBeAbleToInstantiateWithNullProxyClass() {
@@ -282,6 +282,34 @@ public class ProxyConfigurationBuilderTestCase {
         builder.delegateViaMethod(interfaceMethod, "getName");
         assertThat(builder.getDelegatedMethod(interfaceMethod), is(equalTo(delegateMethod)));
         builder.generateHandlerConfiguration();
+    }
+
+    @Test
+    public void typeConversionOverridesTargetMethodReturnType() throws Throwable {
+        final TypeConverter converter = mock(TypeConverter.class);
+        one(converter).getInputType();
+        will(returnValue(String.class));
+        one(converter).getOutputType();
+        will(returnValue(Integer.class));
+        one(converter).convert(with("59"));
+        will(returnValue(59));
+        confirmExpectations();
+
+        final StoredItem item = new StoredItem();
+        item.set("productId", "59");
+
+        final MethodSignature interfaceMethod = new MethodSignature(int.class, "productId");
+        final MethodSignature delegateMethod = new MethodSignature(String.class, "getProductId");
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(Item.class, StoredItem.class);
+
+        builder.delegateMethod(interfaceMethod, delegateMethod);
+        builder.setTypeConverter(interfaceMethod, converter);
+        final ProxyConfiguration configuration = builder.generateHandlerConfiguration();
+        final MethodInvoker invoker = configuration.getMethodInvoker(Item.class.getMethod("productId"));
+        invoker.setTypeConverter(converter);
+
+        invoker.handleInvocation(item);
     }
 
     private void verifyCompatibility(MethodSignature interfaceMethod, MethodSignature delegateMethod) throws IncompatibleMethodMappingException {
