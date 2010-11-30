@@ -35,7 +35,7 @@ import java.lang.reflect.Proxy;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-public class WhatTheHellAreWeDoing {
+public class AnnotationDrivenProxyFactoryTestCase {
 
     @Test
     public void canGetName() {
