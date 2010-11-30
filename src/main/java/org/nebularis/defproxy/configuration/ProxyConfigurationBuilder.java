@@ -224,6 +224,12 @@ public class ProxyConfigurationBuilder {
         if (targetSiteWrappers.containsKey(delegateMethod)) {
             final WrapperSlot slot = targetSiteWrappers.get(delegateMethod);
             if (slot.insertion.equals(Insertion.Prefix)) {
+                if (slot.params.length < delegateMethod.getParameterTypes().length) {
+                    final Class[] inputTypes = new Class[slot.params.length];
+                    final List<Class> inputClassList = asList(delegateMethod.getParameterTypes());
+                    inputClassList.subList(0, inputTypes.length).toArray(inputTypes);
+                    return isAssignable(inputTypes, ClassUtils.toClass(slot.params));
+                }
                 return isAssignable(delegateMethod.getParameterTypes(), ClassUtils.toClass(slot.params));
             } else {
                 assert(slot.insertion.equals(Insertion.Suffix));

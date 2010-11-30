@@ -347,7 +347,7 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
     }
 
     @Test(expected = IncompatibleMethodMappingException.class)
-    public void argumentOverridesFailConstructionWhenArityDoesNotMatch() throws Throwable {
+    public void argumentOverridesFailConstructionWhenWrapperArityIsTooHigh() throws Throwable {
         final TypeConverter converter = new TypeConverter() {
             @Override
             public Class getInputType() { return Object.class; }
@@ -367,6 +367,33 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
 
         builder.delegateMethod(interfaceMethod, delegateMethod);
         builder.wrapDelegate(Insertion.Prefix, delegateMethod, "product-id", "this-is-one-arg-too-many!");
+        builder.setTypeConverter(interfaceMethod, converter);
+
+        builder.generateProxyConfiguration();
+    }
+
+    @Test
+    public void argumentOverridesPanOutWhenWrapperArityIsLowerThanExpectation() throws Throwable {
+        final TypeConverter converter = new TypeConverter() {
+            @Override
+            public Class getInputType() { return Object.class; }
+
+            @Override
+            public Class getOutputType() { return boolean.class; }
+
+            @Override
+            public Object convert(final Object o) { throw new UnsupportedOperationException(); }
+        };
+
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(SomeProxyInterface.class, FooBar.class);
+
+        final MethodSignature interfaceMethod = new MethodSignature(boolean.class, "strangeMethod");
+        final MethodSignature delegateMethod =
+                new MethodSignature(boolean.class, "checkCompatibility", FooBar.class, String.class);
+
+        builder.delegateMethod(interfaceMethod, delegateMethod);
+        builder.wrapDelegate(Insertion.Prefix, delegateMethod, new FooBar() /* we let string arrive at runtime! */);
         builder.setTypeConverter(interfaceMethod, converter);
 
         builder.generateProxyConfiguration();
