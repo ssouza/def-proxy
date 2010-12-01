@@ -34,7 +34,10 @@ import java.lang.annotation.Target;
  * decorated methods to return a different type than that of the mapped method
  * to which they delegate at runtime. This is achieved by associating a
  * {@link org.nebularis.defproxy.introspection.TypeConverter} with the delegated method.
- * 
+ *
+ * The specified {@link ProxyTypeConverter#provider()} class <b>must</b> expose
+ * a no-argument public constructor.
+ *
  * <pre>
  *      &#064;ProxyInterface(delegate = HashMap.class)
  *      public interface Item {
@@ -47,7 +50,7 @@ import java.lang.annotation.Target;
  * </pre>
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD, ElementType.TYPE})
+@Target({ElementType.METHOD})
 public @interface ProxyTypeConverter {
     /**
      * The provider class.

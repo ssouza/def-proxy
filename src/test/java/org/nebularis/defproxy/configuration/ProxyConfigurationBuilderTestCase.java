@@ -316,18 +316,6 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
         invoker.handleInvocation(item);
     }
 
-    @Ignore
-    @Test
-    public void factoryCanBeAppliedAtClassLevel() {
-        throw new NotImplementedException();
-    }
-
-    @Ignore
-    @Test
-    public void typeConversionCanBeAppliedAtClassLevel() {
-        throw new NotImplementedException();
-    }
-
     @Test
     public void factoryTypeConversionOverridesTargetMethodReturnType() throws Throwable {
         final TypeConverter converter = mock(TypeConverter.class);
@@ -352,6 +340,37 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
         builder.setTypeConverterFactory(typeConverterFactory);
 
         builder.delegateMethod(interfaceMethod, delegateMethod);
+        final ProxyConfiguration configuration = builder.generateProxyConfiguration();
+
+        final MethodInvoker invoker = configuration.getMethodInvoker(Item.class.getMethod("productId"));
+        assertThat(invoker.getTypeConverter(), is(sameInstance(converter)));
+    }
+
+    @Test
+    public void methodLevelTypeConverterOverridesClassLevel() throws Throwable {
+        final TypeConverter converter = mock(TypeConverter.class);
+        one(converter).getInputType();
+        will(returnValue(String.class));
+        one(converter).getOutputType();
+        will(returnValue(Integer.class));
+
+        final TypeConverterFactory typeConverterFactory = mock(TypeConverterFactory.class);
+        allowing(typeConverterFactory).createTypeConverter(with(String.class), with(int.class));
+        will(throwException(new RuntimeException()));
+
+        confirmExpectations();
+
+        final StoredItem item = new StoredItem();
+        item.set("productId", "59");
+
+        final MethodSignature interfaceMethod = new MethodSignature(int.class, "productId");
+        final MethodSignature delegateMethod = new MethodSignature(String.class, "getProductId");
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(Item.class, StoredItem.class);
+        builder.setTypeConverterFactory(typeConverterFactory);
+
+        builder.delegateMethod(interfaceMethod, delegateMethod);
+        builder.setTypeConverter(interfaceMethod, converter);
         final ProxyConfiguration configuration = builder.generateProxyConfiguration();
 
         final MethodInvoker invoker = configuration.getMethodInvoker(Item.class.getMethod("productId"));
