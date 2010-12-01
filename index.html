@@ -43,34 +43,29 @@
       <p>
         Creating a new proxy....
       </p>
-      <pre>
-final ProxyFactory factory = new AnnotationDrivenProxyFactory();
-final Map<String,String> delegate = new HashMap<String,String>();
-delegate.put("bar-code", "ABC55C666F");
-delegate.put("product-id", "12345")
-
-final Item proxy = factory.createProxy(delegate, Item.class);
-assert(proxy.barcode() == "ABC55C666F");
-assert(proxy.productId() == 12345);
-	  </pre>
+	<pre style="line-height: 100%;font-family:monospace;background-color:#ffffff; border-width:0.01mm; border-color:#000000; border-style:solid;font-size:8pt;">
+<span style="color:#000080;background-color:#ffffff;font-weight:bold;">final</span><span style="background-color:#ffffff;"> ProxyFactory factory = </span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">new</span><span style="background-color:#ffffff;"> AnnotationDrivenProxyFactory();</span>
+<span style="color:#000080;background-color:#ffffff;font-weight:bold;">final</span><span style="background-color:#ffffff;"> Map delegate = </span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">new</span><span style="background-color:#ffffff;"> HashMap();
+delegate.put(</span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"bar-code"</span><span style="background-color:#ffffff;">, </span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"ABC55C666F"</span><span style="background-color:#ffffff;">);
+delegate.put(</span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"product-id"</span><span style="background-color:#ffffff;">, </span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"12345"</span><span style="background-color:#ffffff;">);
+	
+</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">final</span><span style="background-color:#ffffff;"> Item proxy = factory.createProxy(delegate, Item.</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">class</span><span style="background-color:#ffffff;">);</span>
+<span style="color:#000080;background-color:#ffffff;font-weight:bold;">assert</span><span style="background-color:#ffffff;"> (proxy.barcode() == </span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"ABC55C666F"</span><span style="background-color:#ffffff;">);</span>
+<span style="color:#000080;background-color:#ffffff;font-weight:bold;">assert</span><span style="background-color:#ffffff;"> (proxy.productId() == </span><span style="color:#0000ff;background-color:#ffffff;">12345</span><span style="background-color:#ffffff;">);</span></pre>
       <p>
         Configuring your proxy interface
       </p>
-      <pre>
-@ProxyInterface(delegate = StoredItem.class)
-public interface Item {
+	<pre style="line-height: 100%;font-family:monospace;background-color:#ffffff; border-width:0.01mm; border-color:#000000; border-style:solid;font-size:8pt;"><span style="color:#808000;background-color:#ffffff;">@ProxyInterface</span><span style="background-color:#ffffff;">(delegate = StoredItem.</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">class</span><span style="background-color:#ffffff;">)
+</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">public</span><span style="background-color:#ffffff;"> </span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">interface</span><span style="background-color:#ffffff;"> Item {
+	</span><span style="color:#808000;background-color:#ffffff;">@ProxyDelegated</span><span style="background-color:#ffffff;">(methodName = </span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"get"</span><span style="background-color:#ffffff;">)
+	</span><span style="color:#808000;background-color:#ffffff;">@ProxyArguments</span><span style="background-color:#ffffff;">(value = {</span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"bar-code"</span><span style="background-color:#ffffff;">}, direction = </span><span style="color:#660e7a;background-color:#ffffff;font-weight:bold;font-style:italic;">Prefix</span><span style="background-color:#ffffff;">)
+	String </span><span style="text-decoration:underline;color:#808080"><span style="background-color:#ffffff;">barcode</span></span><span style="background-color:#ffffff;">();
 
-    @ProxyDelegated(methodName = "get")
-    @ProxyArguments(value = {"bar-code"}, direction = Prefix)
-    String barcode();
-
-    @ProxyDelegated(methodName = "get")
-    @ProxyArguments(value = {"product-id"}, direction = Prefix)
-    @ProxyTypeConverter(provider = IntOfStringConverter.class)
-    int productId();
-
-}
-	  </pre>	
+	</span><span style="color:#808000;background-color:#ffffff;">@ProxyDelegated</span><span style="background-color:#ffffff;">(methodName = </span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"get"</span><span style="background-color:#ffffff;">)
+	</span><span style="color:#808000;background-color:#ffffff;">@ProxyArguments</span><span style="background-color:#ffffff;">(value = {</span><span style="color:#008000;background-color:#ffffff;font-weight:bold;">"product-id"</span><span style="background-color:#ffffff;">}, direction = </span><span style="color:#660e7a;background-color:#ffffff;font-weight:bold;font-style:italic;">Prefix</span><span style="background-color:#ffffff;">)
+	</span><span style="color:#808000;background-color:#ffffff;">@ProxyTypeConverter</span><span style="background-color:#ffffff;">(provider = IntOfStringConverter.</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">class</span><span style="background-color:#ffffff;">)
+	</span><span style="color:#000080;background-color:#ffffff;font-weight:bold;">int</span><span style="background-color:#ffffff;"> productId();
+}</span></pre>
 	</div>
     <div id='more-information'>
       <h2>More Information</h2>
