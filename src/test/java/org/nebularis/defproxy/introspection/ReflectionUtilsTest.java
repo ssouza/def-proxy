@@ -20,7 +20,7 @@
  * under the License.
  */
 
-package org.nebularis.defproxy.utils;
+package org.nebularis.defproxy.introspection;
 
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoint;
@@ -38,8 +38,8 @@ import static org.hamcrest.CoreMatchers.sameInstance;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.*;
 import static org.junit.Assume.assumeThat;
-import static org.nebularis.defproxy.utils.ReflectionUtils.isAssignable;
-import static org.nebularis.defproxy.utils.ReflectionUtils.primitiveForOrSame;
+import static org.nebularis.defproxy.introspection.ReflectionUtils.isAssignable;
+import static org.nebularis.defproxy.introspection.ReflectionUtils.primitiveForOrSame;
 
 /**
  * User: carecx

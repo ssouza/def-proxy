@@ -20,7 +20,7 @@
  * under the License.
  */
 
-package org.nebularis.defproxy.utils;
+package org.nebularis.defproxy.introspection;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.ClassUtils;

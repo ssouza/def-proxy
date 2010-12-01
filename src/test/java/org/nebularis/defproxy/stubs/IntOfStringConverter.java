@@ -22,7 +22,7 @@
 
 package org.nebularis.defproxy.stubs;
 
-import org.nebularis.defproxy.utils.TypeConverter;
+import org.nebularis.defproxy.introspection.TypeConverter;
 
 public class IntOfStringConverter implements TypeConverter<String,Integer> {
 

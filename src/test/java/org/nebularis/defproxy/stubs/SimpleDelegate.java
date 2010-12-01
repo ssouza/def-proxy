@@ -20,26 +20,12 @@
  * under the License.
  */
 
-package org.nebularis.defproxy;
+package org.nebularis.defproxy.stubs;
 
-import org.nebularis.defproxy.configuration.ProxyConfigurationBuilder;
-import org.nebularis.defproxy.introspection.MethodSignature;
+public class SimpleDelegate {
 
-/**
- * {@link org.nebularis.defproxy.ProxyFactory} implementation that uses
- * class/method level annotations to handle proxy configuration.
- */
-public class AnnotationDrivenProxyFactory implements ProxyFactory {
-
-    @Override
-    public <T> T createProxy(final Object delegate, final Class<T> proxyInterface) {
-        return null;
+    public void method1() {
+        System.out.println("Hello method1");
     }
 
-    @Override
-    public <T> T createProxy(final Object delegate, final Class<T> proxyInterface, final ProxyConfigurationBuilder builder) {
-        builder.delegateMethod(new MethodSignature(void.class, "method1"));
-        return null;
-    }
-    
 }

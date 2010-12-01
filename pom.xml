@@ -22,11 +22,14 @@
             <comments>A business-friendly OSS license</comments>
         </license>
     </licenses>
-        <developers>
+    <developers>
         <developer>
             <id>hyperthunk</id>
             <name>Tim Watson</name>
             <email>watson dot timothy at gmail dot com</email>
+            <url>http://hyperthunk.wordpress.com</url>
+            <organization>British Telecommunications</organization>
+            <organizationUrl>http://btplc.com/</organizationUrl>
             <roles>
                 <role>Developer</role>
             </roles>
@@ -35,6 +38,9 @@
             <id>ccare</id>
             <name>Charles Care</name>
             <email></email>
+            <url>http://www.warwick.ac.uk/go/ccare</url>
+            <organization>British Telecommunications</organization>
+            <organizationUrl>http://btplc.com/</organizationUrl>
             <roles>
                 <role>Developer</role>
             </roles>
@@ -43,6 +49,29 @@
             <id>BoyCook</id>
             <name>Craig Cook</name>
             <email>boycook at me dot com</email>
+            <url>http://boycook.com</url>
+            <organization>British Telecommunications</organization>
+            <organizationUrl>http://btplc.com/</organizationUrl>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>santoshph</id>
+            <name>Santosh</name>
+            <email></email>
+            <organization>Infosys</organization>
+            <organizationUrl>http://www.infosys.com/</organizationUrl>
+            <roles>
+                <role>Developer</role>
+            </roles>
+        </developer>
+        <developer>
+            <id>dinu07</id>
+            <name>Dinesh</name>
+            <email></email>
+            <organization>Infosys</organization>
+            <organizationUrl>http://www.infosys.com/</organizationUrl>
             <roles>
                 <role>Developer</role>
             </roles>
