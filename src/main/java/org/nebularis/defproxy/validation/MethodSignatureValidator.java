@@ -27,7 +27,7 @@ import org.nebularis.defproxy.introspection.MethodSignature;
 import java.lang.reflect.Method;
 
 import static org.apache.commons.beanutils.MethodUtils.getMatchingAccessibleMethod;
-import static org.nebularis.defproxy.introspection.ReflectionUtils.isAssignable;
+import static org.nebularis.defproxy.utils.ReflectionUtils.isAssignable;
 
 /**
  * Provides a boolean check to determine whether or not

@@ -23,7 +23,9 @@
 package org.nebularis.defproxy.introspection;
 
 import org.nebularis.defproxy.configuration.ExceptionHandlingPolicy;
-import org.nebularis.defproxy.introspection.TypeConverter;
+import org.nebularis.defproxy.utils.TypeConverter;
+
+import java.lang.reflect.Method;
 
 /**
  * The external behavioural contract for custom method invocations.
@@ -52,7 +54,7 @@ public interface MethodInvoker {
     void setExceptionHandlerPolicy(ExceptionHandlingPolicy exceptionHandlerPolicy);
 
     /**
-     * Sets a {@link TypeConverter} that will be
+     * Sets a {@link org.nebularis.defproxy.utils.TypeConverter} that will be
      * used to marshal between the return type of the target site (see
      * {@link MethodInvoker#getMethodSignature()}) and another (expected) type.
      * @param converter

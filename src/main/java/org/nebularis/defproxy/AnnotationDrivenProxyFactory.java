@@ -22,24 +22,8 @@
 
 package org.nebularis.defproxy;
 
-import org.nebularis.defproxy.configuration.ProxyConfigurationBuilder;
-import org.nebularis.defproxy.introspection.MethodSignature;
-
 /**
- * {@link org.nebularis.defproxy.ProxyFactory} implementation that uses
- * class/method level annotations to handle proxy configuration.
+ * 
  */
-public class AnnotationDrivenProxyFactory implements ProxyFactory {
-
-    @Override
-    public <T> T createProxy(final Object delegate, final Class<T> proxyInterface) {
-        return null;
-    }
-
-    @Override
-    public <T> T createProxy(final Object delegate, final Class<T> proxyInterface, final ProxyConfigurationBuilder builder) {
-        builder.delegateMethod(new MethodSignature(void.class, "method1"));
-        return null;
-    }
-    
+public class AnnotationDrivenProxyFactory {
 }

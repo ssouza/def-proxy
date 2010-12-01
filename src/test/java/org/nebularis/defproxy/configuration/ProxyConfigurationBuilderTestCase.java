@@ -27,9 +27,9 @@ import org.junit.runner.RunWith;
 import org.nebularis.defproxy.annotations.Insertion;
 import org.nebularis.defproxy.introspection.MethodInvoker;
 import org.nebularis.defproxy.introspection.MethodSignature;
-import org.nebularis.defproxy.introspection.TypeConverter;
 import org.nebularis.defproxy.stubs.*;
 import org.nebularis.defproxy.test.AbstractJMockTestSupport;
+import org.nebularis.defproxy.utils.TypeConverter;
 import org.nebularis.defproxy.validation.MethodSignatureValidator;
 
 import java.util.HashMap;
@@ -276,7 +276,7 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
     }
 
     @Test
-    public void viaMappingWorksForMatchedDelegateMethods() throws MappingException {
+    public void viaMappingFailsForUnmatchedDelegateMethods() throws MappingException {
         final MethodSignature interfaceMethod = new MethodSignature(String.class, "getSpecialName");
         final MethodSignature delegateMethod = new MethodSignature(String.class, "getName");
         final ProxyConfigurationBuilder builder =

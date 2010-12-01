@@ -26,7 +26,7 @@ import org.nebularis.defproxy.configuration.ExceptionHandlingPolicy;
 import org.nebularis.defproxy.introspection.CallSite;
 import org.nebularis.defproxy.introspection.MethodSignature;
 import org.nebularis.defproxy.introspection.MethodInvoker;
-import org.nebularis.defproxy.introspection.TypeConverter;
+import org.nebularis.defproxy.utils.TypeConverter;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

@@ -20,13 +20,31 @@
  * under the License.
  */
 
-package org.nebularis.defproxy.stubs;
+package org.nebularis.defproxy.utils;
 
-import org.nebularis.defproxy.annotations.ProxyInterface;
+/**
+ * General purpose type conversion.
+ */
+public interface TypeConverter<T1,T2> {
 
-@ProxyInterface(delegate = SimpleDelegate.class)
-public interface SimpleInterface {
+    /**
+     * Gets the input type (from which you wish to convert).
+     * @return
+     */
+    Class<? extends T1> getInputType();
 
-    void method1();
+    /**
+     * Gets the output type (to which you wish to convert).
+     * @return
+     */
+    Class<? extends T2> getOutputType();
+
+    /**
+     * Convert object <i>o</i> of type T1, to type T2.
+     * @param o
+     * @return an object of type T2
+     * @throws 
+     */
+    T2 convert(T1 o);
 
 }
