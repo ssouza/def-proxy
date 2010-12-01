@@ -27,7 +27,7 @@ import org.nebularis.defproxy.introspection.MethodSignature;
 
 /**
  * Thrown when two methods have incompatible signatures and no
- * {@link org.nebularis.defproxy.utils.TypeConverter} has been specified.
+ * {@link org.nebularis.defproxy.introspection.TypeConverter} has been specified.
  */
 public class IncompatibleMethodMappingException extends MappingException {
 

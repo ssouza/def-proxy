@@ -22,7 +22,7 @@
 
 package org.nebularis.defproxy.annotations;
 
-import org.nebularis.defproxy.utils.TypeConverter;
+import org.nebularis.defproxy.introspection.TypeConverter;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -33,7 +33,7 @@ import java.lang.annotation.Target;
  * Provides a means for {@link org.nebularis.defproxy.annotations.ProxyDelegated}
  * decorated methods to return a different type than that of the mapped method
  * to which they delegate at runtime. This is achieved by associating a
- * {@link org.nebularis.defproxy.utils.TypeConverter} with the delegated method.
+ * {@link org.nebularis.defproxy.introspection.TypeConverter} with the delegated method.
  * 
  * <pre>
  *      &#064;ProxyInterface(delegate = HashMap.class)

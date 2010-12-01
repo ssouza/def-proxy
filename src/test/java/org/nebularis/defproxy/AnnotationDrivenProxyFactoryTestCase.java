@@ -21,9 +21,16 @@
  */
 package org.nebularis.defproxy;
 
+import org.jmock.integration.junit4.JMock;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nebularis.defproxy.configuration.ProxyConfigurationBuilder;
+import org.nebularis.defproxy.introspection.MethodSignature;
 import org.nebularis.defproxy.stubs.MyDelegate;
 import org.nebularis.defproxy.stubs.MyProxyInterface;
+import org.nebularis.defproxy.stubs.SimpleDelegate;
+import org.nebularis.defproxy.stubs.SimpleInterface;
+import org.nebularis.defproxy.test.AbstractJMockTestSupport;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -33,7 +40,19 @@ import java.lang.reflect.Proxy;
 import static org.hamcrest.CoreMatchers.*;
 import static org.junit.Assert.*;
 
-public class AnnotationDrivenProxyFactoryTestCase {
+@RunWith(JMock.class)
+public class AnnotationDrivenProxyFactoryTestCase extends AbstractJMockTestSupport {
+
+    @Test
+    public void defaultMappingAreCreatedForAllNonAnnotatedMethods() {
+        final ProxyConfigurationBuilder builder = mock(ProxyConfigurationBuilder.class);
+        one(builder).delegateMethod(new MethodSignature(void.class, "method1"));
+
+        confirmExpectations();
+
+        final ProxyFactory factory = new AnnotationDrivenProxyFactory();
+        factory.createProxy(new SimpleDelegate(), SimpleInterface.class, builder);
+    }
 
     @Test
     public void canGetName() {
