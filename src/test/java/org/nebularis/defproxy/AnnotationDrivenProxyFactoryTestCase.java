@@ -43,6 +43,22 @@ import static org.junit.Assert.*;
 @RunWith(JMock.class)
 public class AnnotationDrivenProxyFactoryTestCase extends AbstractJMockTestSupport {
 
+    // null values as input should fail
+
+    // mapping proxy interface to a delegate that isn't registered in the ProxyInterface annotation should fail
+
+    // mapping methods not using ProxyDelegated should call builder.delegateMethod(interfaceMethod);
+
+    // mapping methods with methodName property set, should call builder (see builder test case)
+
+    // mapping methods with methodInvocationHandler set, should call builder (see builder test case)
+
+    // mapping methods with ProxyArguments set, should call builder.wrapDelegate (see builder test case)
+
+    // getting annotations from methods should be done in a safe/defensive manner
+
+    // getting annotations from methods should work across inheritance hierarchies.
+
     @Test
     public void defaultMappingAreCreatedForAllNonAnnotatedMethods() {
         final ProxyConfigurationBuilder builder = mock(ProxyConfigurationBuilder.class);

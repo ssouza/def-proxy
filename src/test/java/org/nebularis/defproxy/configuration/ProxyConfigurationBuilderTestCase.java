@@ -314,6 +314,33 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
         invoker.handleInvocation(item);
     }
 
+    // @Test
+    public void factoryTypeConversionOverridesTargetMethodReturnType() throws Throwable {
+        fail("not finished!");
+        final TypeConverter converter = mock(TypeConverter.class);
+        one(converter).getInputType();
+        will(returnValue(String.class));
+        one(converter).getOutputType();
+        will(returnValue(Integer.class));
+        one(converter).convert(with("59"));
+        will(returnValue(59));
+        confirmExpectations();
+
+        final StoredItem item = new StoredItem();
+        item.set("productId", "59");
+
+        final MethodSignature interfaceMethod = new MethodSignature(int.class, "productId");
+        final MethodSignature delegateMethod = new MethodSignature(String.class, "getProductId");
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(Item.class, StoredItem.class);
+
+        builder.delegateMethod(interfaceMethod, delegateMethod);
+        builder.setTypeConverter(interfaceMethod, converter);
+        final ProxyConfiguration configuration = builder.generateProxyConfiguration();
+        final MethodInvoker invoker = configuration.getMethodInvoker(Item.class.getMethod("productId"));
+        // assertThat()
+    }
+
     @Test
     public void argumentOverridesSplatTargetMethodArity() throws Throwable {
         final TypeConverter converter = mock(TypeConverter.class);

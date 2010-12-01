@@ -21,7 +21,9 @@
  */
 package org.nebularis.defproxy.configuration;
 
+import org.jmock.integration.junit4.JMock;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 import org.nebularis.defproxy.configuration.MethodInvocationNotSupportedException;
 import org.nebularis.defproxy.introspection.MethodInvokerTemplate;
 import org.nebularis.defproxy.configuration.ProxyConfiguration;
@@ -39,6 +41,7 @@ import static org.hamcrest.core.IsSame.sameInstance;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 
+@RunWith(JMock.class)
 public class ProxyConfigurationTestCase extends AbstractJMockTestSupport {
 
     @Test
