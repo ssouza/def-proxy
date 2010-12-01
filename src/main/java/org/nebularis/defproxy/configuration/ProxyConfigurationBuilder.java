@@ -50,6 +50,7 @@ import static org.nebularis.defproxy.introspection.ReflectionUtils.isAssignable;
  * custom exception handling policies.
  */
 public class ProxyConfigurationBuilder {
+    private ExceptionHandlingPolicy globalExceptionHandlingPolicy;
 
     private static class WrapperSlot {
         public final Insertion insertion;
@@ -72,6 +73,8 @@ public class ProxyConfigurationBuilder {
     private final Map<MethodSignature, MethodSignature> directMappings = new HashMap<MethodSignature, MethodSignature>();
     private final Map<MethodSignature, TypeConverter> conversionMappings = new HashMap<MethodSignature, TypeConverter>();
     private final Map<MethodSignature, WrapperSlot> targetSiteWrappers = new HashMap<MethodSignature, WrapperSlot>();
+    private final Map<MethodSignature, ExceptionHandlingPolicy> exceptionHandlingPolicies =
+            new HashMap<MethodSignature, ExceptionHandlingPolicy>();
 
     public ProxyConfigurationBuilder(final Class<?> interfaceClass, final Class<?> delegateClass) {
         Validate.notNull(interfaceClass, "Interface Class cannot be null");
@@ -80,6 +83,18 @@ public class ProxyConfigurationBuilder {
         this.delegateClass = delegateClass;
         setInterfaceValidator(new MethodSignatureValidator(interfaceClass));
         setDelegateValidator(new MethodSignatureValidator(delegateClass));
+    }
+
+    public ExceptionHandlingPolicy getGlobalExceptionHandlingPolicy() {
+        return globalExceptionHandlingPolicy;
+    }
+
+    public void setGlobalExceptionHandlingPolicy(final ExceptionHandlingPolicy policy) {
+        globalExceptionHandlingPolicy = policy;
+    }
+
+    public void setExceptionHandlingPolicy(final MethodSignature interfaceMethod, final ExceptionHandlingPolicy policy) {
+        exceptionHandlingPolicies.put(interfaceMethod, policy);
     }
 
     public TypeConverterFactory getTypeConverterFactory() {
@@ -199,10 +214,19 @@ public class ProxyConfigurationBuilder {
                 invoker = new MethodInvokerTemplate(delegateMethod);
             }
 
+            final ExceptionHandlingPolicy policy = getExceptionHandlingPolicy(interfaceMethod);
+            invoker.setExceptionHandlerPolicy(policy);
             invoker.setTypeConverter(getTypeConverter(interfaceMethod, delegateMethod));
             configuration.registerMethodInvoker(interfaceMethod, invoker);
         }
         return configuration;
+    }
+
+    private ExceptionHandlingPolicy getExceptionHandlingPolicy(final MethodSignature interfaceMethod) {
+        ExceptionHandlingPolicy policy = exceptionHandlingPolicies.get(interfaceMethod);
+        if (policy != null)
+            return policy;
+        return globalExceptionHandlingPolicy;
     }
 
     private void check(final MethodSignature sig, final MethodSignatureValidator validator, final Class<?> checkClass) throws InvalidMethodMappingException {

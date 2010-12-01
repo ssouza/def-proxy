@@ -512,6 +512,71 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
         builder.generateProxyConfiguration();
     }
 
+    @Test
+    public void methodLevelExceptionHandlingPolicyIsPassedToInvoker() throws Throwable {
+        final ExceptionHandlingPolicy policy = stub(ExceptionHandlingPolicy.class);
+        confirmExpectations();
+
+        final StoredItem item = new StoredItem();
+        item.set("productId", "59");
+
+        final MethodSignature interfaceMethod = new MethodSignature(void.class, "method1");
+        final MethodSignature delegateMethod = new MethodSignature(void.class, "method1");
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(SimpleInterface.class, SimpleDelegate.class);
+
+        builder.delegateMethod(interfaceMethod, delegateMethod);
+        builder.setExceptionHandlingPolicy(interfaceMethod, policy);
+        final ProxyConfiguration configuration = builder.generateProxyConfiguration();
+
+        final MethodInvoker invoker = configuration.getMethodInvoker(SimpleInterface.class.getMethod("method1"));
+        assertThat(invoker.getExceptionHandlingPolicy(), is(sameInstance(policy)));
+    }
+
+    @Test
+    public void typeLevelExceptionHandlingPolicyIsPassedToInvoker() throws Throwable {
+        final ExceptionHandlingPolicy policy = stub(ExceptionHandlingPolicy.class);
+        confirmExpectations();
+
+        final StoredItem item = new StoredItem();
+        item.set("productId", "59");
+
+        final MethodSignature interfaceMethod = new MethodSignature(void.class, "method1");
+        final MethodSignature delegateMethod = new MethodSignature(void.class, "method1");
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(SimpleInterface.class, SimpleDelegate.class);
+        builder.setGlobalExceptionHandlingPolicy(policy);
+
+        builder.delegateMethod(interfaceMethod, delegateMethod);
+        final ProxyConfiguration configuration = builder.generateProxyConfiguration();
+
+        final MethodInvoker invoker = configuration.getMethodInvoker(SimpleInterface.class.getMethod("method1"));
+        assertThat(invoker.getExceptionHandlingPolicy(), is(sameInstance(policy)));
+    }
+
+    @Test
+    public void methodLevelExceptionHandlingPolicyOverridesTypeLevel() throws Throwable {
+        final ExceptionHandlingPolicy globalPolicy = mock(ExceptionHandlingPolicy.class, "globalEHP");
+        final ExceptionHandlingPolicy localPolicy = mock(ExceptionHandlingPolicy.class, "localEHP");
+        confirmExpectations();
+
+        final StoredItem item = new StoredItem();
+        item.set("productId", "59");
+
+        final MethodSignature interfaceMethod = new MethodSignature(void.class, "method1");
+        final MethodSignature delegateMethod = new MethodSignature(void.class, "method1");
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(SimpleInterface.class, SimpleDelegate.class);
+        builder.setGlobalExceptionHandlingPolicy(globalPolicy);
+
+        builder.delegateMethod(interfaceMethod, delegateMethod);
+        builder.setExceptionHandlingPolicy(interfaceMethod, localPolicy);
+        final ProxyConfiguration configuration = builder.generateProxyConfiguration();
+
+        final MethodInvoker invoker = configuration.getMethodInvoker(SimpleInterface.class.getMethod("method1"));
+        assertThat(invoker.getExceptionHandlingPolicy(), is(sameInstance(localPolicy)));
+    }
+
     private void verifyCompatibility(MethodSignature interfaceMethod, MethodSignature delegateMethod) throws IncompatibleMethodMappingException {
         final ProxyConfigurationBuilder builder = getProxyConfigurationBuilderWithNoClassLevelChecking();
         builder.checkCompatibility(interfaceMethod, delegateMethod);
