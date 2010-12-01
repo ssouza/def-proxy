@@ -22,7 +22,7 @@
 
 package org.nebularis.defproxy.annotations;
 
-import org.nebularis.defproxy.introspection.TypeConverter;
+import org.nebularis.defproxy.introspection.TypeConverterFactory;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -33,28 +33,30 @@ import java.lang.annotation.Target;
  * Provides a means for {@link org.nebularis.defproxy.annotations.ProxyDelegated}
  * decorated methods to return a different type than that of the mapped method
  * to which they delegate at runtime. This is achieved by associating a
- * {@link org.nebularis.defproxy.introspection.TypeConverter} with the delegated method.
+ * {@link org.nebularis.defproxy.introspection.TypeConverterFactory} with the delegated method.
  *
- * The specified {@link ProxyTypeConverter#provider()} class <b>must</b> expose
- * a no-argument public constructor.
+ * Unlike {@link org.nebularis.defproxy.annotations.ProxyTypeConverter}, the factory
+ * can be specified as a class level annotation, thereby allowing you to provide one
+ * implementation for all methods. The specified {@link ProxyTypeConverterFactory#provider()}
+ * class <b>must</b> expose a no-argument public constructor.
  *
  * <pre>
  *      &#064;ProxyInterface(delegate = HashMap.class)
+ *      &#064;ProxyTypeConverterFactory(provider = MyConverterFactory.class)
  *      public interface Item {
  *
  *          &#064;ProxyDelegated(methodName = "get")
  *          &#064;ProxyArguments(value = {"product-id"}, direction = Prefix)
- *          &#064;ProxyTypeConverter(provider = IntOfStringConverter.class)
  *          int productId();
  *      }
  * </pre>
  */
 @Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.METHOD})
-public @interface ProxyTypeConverter {
+@Target({ElementType.TYPE})
+public @interface ProxyTypeConverterFactory {
     /**
      * The provider class.
      * @return
      */
-    Class<? extends TypeConverter> provider();
+    Class<? extends TypeConverterFactory> provider();
 }

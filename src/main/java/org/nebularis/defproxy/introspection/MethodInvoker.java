@@ -52,7 +52,14 @@ public interface MethodInvoker {
     void setExceptionHandlerPolicy(ExceptionHandlingPolicy exceptionHandlerPolicy);
 
     /**
-     * Sets a {@link TypeConverter} that will be
+     * Get the {@link org.nebularis.defproxy.introspection.TypeConverter} associated
+     * with this instance.
+     * @return
+     */
+    TypeConverter getTypeConverter();
+
+    /**
+     * Sets a {@link org.nebularis.defproxy.introspection.TypeConverter} that will be
      * used to marshal between the return type of the target site (see
      * {@link MethodInvoker#getMethodSignature()}) and another (expected) type.
      * @param converter

@@ -21,13 +21,13 @@
  */
 package org.nebularis.defproxy.configuration;
 
+import org.apache.commons.lang.NotImplementedException;
 import org.jmock.integration.junit4.JMock;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nebularis.defproxy.annotations.Insertion;
-import org.nebularis.defproxy.introspection.MethodInvoker;
-import org.nebularis.defproxy.introspection.MethodSignature;
-import org.nebularis.defproxy.introspection.TypeConverter;
+import org.nebularis.defproxy.introspection.*;
 import org.nebularis.defproxy.stubs.*;
 import org.nebularis.defproxy.test.AbstractJMockTestSupport;
 import org.nebularis.defproxy.validation.MethodSignatureValidator;
@@ -36,6 +36,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.hamcrest.Matchers.instanceOf;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
@@ -314,16 +316,18 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
         invoker.handleInvocation(item);
     }
 
-    // @Test
+    @Test
     public void factoryTypeConversionOverridesTargetMethodReturnType() throws Throwable {
-        fail("not finished!");
         final TypeConverter converter = mock(TypeConverter.class);
         one(converter).getInputType();
         will(returnValue(String.class));
         one(converter).getOutputType();
         will(returnValue(Integer.class));
-        one(converter).convert(with("59"));
-        will(returnValue(59));
+        
+        final TypeConverterFactory typeConverterFactory = mock(TypeConverterFactory.class);
+        allowing(typeConverterFactory).createTypeConverter(with(String.class), with(int.class));
+        will(returnValue(converter));
+
         confirmExpectations();
 
         final StoredItem item = new StoredItem();
@@ -333,12 +337,44 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
         final MethodSignature delegateMethod = new MethodSignature(String.class, "getProductId");
         final ProxyConfigurationBuilder builder =
                 new ProxyConfigurationBuilder(Item.class, StoredItem.class);
+        builder.setTypeConverterFactory(typeConverterFactory);
+
+        builder.delegateMethod(interfaceMethod, delegateMethod);
+        final ProxyConfiguration configuration = builder.generateProxyConfiguration();
+
+        final MethodInvoker invoker = configuration.getMethodInvoker(Item.class.getMethod("productId"));
+        assertThat(invoker.getTypeConverter(), is(sameInstance(converter)));
+    }
+
+    @Test
+    public void methodLevelTypeConverterOverridesClassLevel() throws Throwable {
+        final TypeConverter converter = mock(TypeConverter.class);
+        one(converter).getInputType();
+        will(returnValue(String.class));
+        one(converter).getOutputType();
+        will(returnValue(Integer.class));
+
+        final TypeConverterFactory typeConverterFactory = mock(TypeConverterFactory.class);
+        allowing(typeConverterFactory).createTypeConverter(with(String.class), with(int.class));
+        will(throwException(new RuntimeException()));
+
+        confirmExpectations();
+
+        final StoredItem item = new StoredItem();
+        item.set("productId", "59");
+
+        final MethodSignature interfaceMethod = new MethodSignature(int.class, "productId");
+        final MethodSignature delegateMethod = new MethodSignature(String.class, "getProductId");
+        final ProxyConfigurationBuilder builder =
+                new ProxyConfigurationBuilder(Item.class, StoredItem.class);
+        builder.setTypeConverterFactory(typeConverterFactory);
 
         builder.delegateMethod(interfaceMethod, delegateMethod);
         builder.setTypeConverter(interfaceMethod, converter);
         final ProxyConfiguration configuration = builder.generateProxyConfiguration();
+
         final MethodInvoker invoker = configuration.getMethodInvoker(Item.class.getMethod("productId"));
-        // assertThat()
+        assertThat(invoker.getTypeConverter(), is(sameInstance(converter)));
     }
 
     @Test
