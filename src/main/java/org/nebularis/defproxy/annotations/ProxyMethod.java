@@ -32,12 +32,12 @@ import java.lang.annotation.Target;
 /**
  * This annotation explicitly marks a method as delegated, allowing
  * you to specify the underlying method name or provide an invocation handler class.
- * <b>It is an error to supply both the {@link ProxyDelegated#methodName()} and
- * {@link ProxyDelegated#methodInvocationHandler()} properties on a mapped field.</b>
+ * <b>It is an error to supply both the {@link ProxyMethod#methodName()} and
+ * {@link ProxyMethod#methodInvocationHandler()} properties on a mapped field.</b>
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.METHOD)
-public @interface ProxyDelegated {
+public @interface ProxyMethod {
 
     /**
      * Optional. Indicates the method name in the back-end to
@@ -59,7 +59,7 @@ public @interface ProxyDelegated {
      *      }
      * </pre>
      *
-     * <em>This value is ignored if the {@link ProxyDelegated#methodInvocationHandler()}
+     * <em>This value is ignored if the {@link ProxyMethod#methodInvocationHandler()}
      * option has been set. Otherwise, this value is required.</em>
      * @return
      */
@@ -81,7 +81,7 @@ public @interface ProxyDelegated {
      *      }
      * </pre>
      *
-     * <em>This value is ignored if the {@link ProxyDelegated#methodName()}
+     * <em>This value is ignored if the {@link ProxyMethod#methodName()}
      * option has been set. Otherwise, this value is required.</em>
      * @return
      */

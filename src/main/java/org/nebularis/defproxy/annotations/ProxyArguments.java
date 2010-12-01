@@ -29,7 +29,7 @@ import java.lang.annotation.Target;
 
 /**
  * Provides annotations for passing additional string arguments to a
- * {@link org.nebularis.defproxy.annotations.ProxyDelegated} method
+ * {@link org.nebularis.defproxy.annotations.ProxyMethod} method
  * in order to modify the parameter array during dynamic dispatch.
  *
  * In the following example, the <code>barcode</code> method is mapped

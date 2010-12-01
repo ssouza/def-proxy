@@ -30,7 +30,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Provides a means for {@link org.nebularis.defproxy.annotations.ProxyDelegated}
+ * Provides a means for {@link org.nebularis.defproxy.annotations.ProxyMethod}
  * decorated methods to return a different type than that of the mapped method
  * to which they delegate at runtime. This is achieved by associating a
  * {@link org.nebularis.defproxy.introspection.TypeConverter} with the delegated method.

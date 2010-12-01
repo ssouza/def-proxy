@@ -22,6 +22,11 @@
 
 package org.nebularis.defproxy;
 
+import java.lang.reflect.Method;
+
+import org.apache.commons.lang.Validate;
+import org.nebularis.defproxy.annotations.ProxyInterface;
+import org.nebularis.defproxy.annotations.ProxyMethod;
 import org.nebularis.defproxy.configuration.ProxyConfigurationBuilder;
 import org.nebularis.defproxy.introspection.MethodSignature;
 
@@ -33,13 +38,42 @@ public class AnnotationDrivenProxyFactory implements ProxyFactory {
 
     @Override
     public <T> T createProxy(final Object delegate, final Class<T> proxyInterface) {
-        return createProxy(delegate, proxyInterface, new ProxyConfigurationBuilder(proxyInterface, delegate.getClass()));
+    	Validate.notNull(delegate,"Please specify the delegate");
+    	Validate.notNull(proxyInterface,"Please specify the proxy interface");
+    	Class<? extends Object> delegateClazz = delegate.getClass();
+		return createProxy(delegate, proxyInterface, new ProxyConfigurationBuilder(proxyInterface, delegateClazz));
     }
 
     @Override
-    public <T> T createProxy(final Object delegate, final Class<T> proxyInterface, final ProxyConfigurationBuilder builder) {
-        builder.delegateMethod(new MethodSignature(void.class, "method1"));
-        return null;
+    public <T> T createProxy(final Object delegate, final Class<T> proxyInterface, final ProxyConfigurationBuilder builder) throws UnproxyableDelegateException {
+    	Validate.notNull(delegate,"Please specify the delegate");
+    	Validate.notNull(proxyInterface,"Please specify the proxy interface");
+    	Validate.notNull(builder,"Please specify the Proxy Configuration builder");
+        
+    	ProxyInterface annotation = proxyInterface.getAnnotation(ProxyInterface.class);
+    	//Validate the annotation
+    	if(annotation == null){
+    		throw new UnproxyableDelegateException(delegate);
+    	}
+    	
+    	for(Method method:proxyInterface.getMethods()){
+    		ProxyMethod methodAnnotation = method.getAnnotation(ProxyMethod.class);
+    		Class<?> returnType = method.getReturnType();    		
+			String interfaceMethodName = method.getName();
+			MethodSignature interfaceMethod = new MethodSignature(returnType, interfaceMethodName);
+    		
+    		if(methodAnnotation!=null){    			  			
+    			String delegateMethodName = methodAnnotation.methodName();
+    			MethodSignature delegateMethod = new MethodSignature(returnType, delegateMethodName);
+				builder.delegateMethod(interfaceMethod,delegateMethod);
+    		}else{
+    			builder.delegateMethod(interfaceMethod);
+    		}
+    	}
+    	
+    	return null;
     }
+    
+    
     
 }

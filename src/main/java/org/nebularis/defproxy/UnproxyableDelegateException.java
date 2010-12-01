@@ -20,22 +20,18 @@
  * under the License.
  */
 
-package org.nebularis.defproxy.stubs;
+package org.nebularis.defproxy;
 
-import org.nebularis.defproxy.annotations.*;
 
-import static org.nebularis.defproxy.annotations.Insertion.*;
+public class UnproxyableDelegateException extends RuntimeException {
 
-@ProxyInterface(delegate = StoredItem.class)
-public interface Item {
+    private final Object delegate;
+    
+    public UnproxyableDelegateException(final Object delegate) {
+        this.delegate = delegate;
+    }
 
-    @ProxyMethod(methodName = "get")
-    @ProxyArguments(value = {"bar-code"}, direction = Prefix)
-    String barcode();
-
-    @ProxyMethod(methodName = "get")
-    @ProxyArguments(value = {"product-id"}, direction = Prefix)
-    @ProxyTypeConverter(provider = IntOfStringConverter.class)
-    int productId();
-
+    public Object getDelegate() {
+        return delegate;
+    }
 }

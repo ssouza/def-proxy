@@ -22,23 +22,24 @@
 
 package org.nebularis.defproxy.configuration;
 
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.ClassUtils;
-import org.apache.commons.lang.Validate;
-import org.nebularis.defproxy.annotations.Insertion;
-import org.nebularis.defproxy.configuration.IncompatibleMethodMappingException;
-import org.nebularis.defproxy.configuration.InvalidMethodMappingException;
-import org.nebularis.defproxy.configuration.MappingException;
-import org.nebularis.defproxy.configuration.ProxyConfiguration;
-import org.nebularis.defproxy.introspection.*;
-import org.nebularis.defproxy.validation.MethodSignatureValidator;
+import static java.util.Arrays.asList;
+import static org.nebularis.defproxy.introspection.ReflectionUtils.isAssignable;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static java.util.Arrays.asList;
-import static org.nebularis.defproxy.introspection.ReflectionUtils.isAssignable;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.ClassUtils;
+import org.apache.commons.lang.Validate;
+import org.nebularis.defproxy.annotations.Insertion;
+import org.nebularis.defproxy.introspection.MethodInvoker;
+import org.nebularis.defproxy.introspection.MethodInvokerTemplate;
+import org.nebularis.defproxy.introspection.MethodSignature;
+import org.nebularis.defproxy.introspection.TargetSiteWrapper;
+import org.nebularis.defproxy.introspection.TypeConverter;
+import org.nebularis.defproxy.introspection.TypeConverterFactory;
+import org.nebularis.defproxy.validation.MethodSignatureValidator;
 
 /**
  * Builder for proxy handler configurations. You use this class to
@@ -292,5 +293,5 @@ public class ProxyConfigurationBuilder {
         }
         return isAssignable(interfaceMethod.getParameterTypes(), delegateMethod.getParameterTypes());
     }
-
+    
 }

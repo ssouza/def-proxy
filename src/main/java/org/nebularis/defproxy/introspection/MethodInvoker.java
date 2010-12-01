@@ -68,7 +68,7 @@ public interface MethodInvoker {
 
     /**
      * Final Class that represents "no method invoker" in a
-     * {@link org.nebularis.defproxy.annotations.ProxyDelegated} annotation instance.
+     * {@link org.nebularis.defproxy.annotations.ProxyMethod} annotation instance.
      */
     public final class NoMethodInvoker {}
 
