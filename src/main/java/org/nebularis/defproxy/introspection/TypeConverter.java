@@ -20,26 +20,31 @@
  * under the License.
  */
 
-package org.nebularis.defproxy;
-
-import org.nebularis.defproxy.configuration.ProxyConfigurationBuilder;
-import org.nebularis.defproxy.introspection.MethodSignature;
+package org.nebularis.defproxy.introspection;
 
 /**
- * {@link org.nebularis.defproxy.ProxyFactory} implementation that uses
- * class/method level annotations to handle proxy configuration.
+ * General purpose type conversion.
  */
-public class AnnotationDrivenProxyFactory implements ProxyFactory {
+public interface TypeConverter<T1,T2> {
 
-    @Override
-    public <T> T createProxy(final Object delegate, final Class<T> proxyInterface) {
-        return null;
-    }
+    /**
+     * Gets the input type (from which you wish to convert).
+     * @return
+     */
+    Class<? extends T1> getInputType();
 
-    @Override
-    public <T> T createProxy(final Object delegate, final Class<T> proxyInterface, final ProxyConfigurationBuilder builder) {
-        builder.delegateMethod(new MethodSignature(void.class, "method1"));
-        return null;
-    }
-    
+    /**
+     * Gets the output type (to which you wish to convert).
+     * @return
+     */
+    Class<? extends T2> getOutputType();
+
+    /**
+     * Convert object <i>o</i> of type T1, to type T2.
+     * @param o
+     * @return an object of type T2
+     * @throws 
+     */
+    T2 convert(T1 o);
+
 }

@@ -27,7 +27,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nebularis.defproxy.stubs.StoredItem;
 import org.nebularis.defproxy.test.AbstractJMockTestSupport;
-import org.nebularis.defproxy.utils.TypeConverter;
+import org.nebularis.defproxy.introspection.TypeConverter;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
