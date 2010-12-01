@@ -3,5 +3,4 @@ org.nebularis.defproxy.annotations
 org.nebularis.defproxy.configuration
 org.nebularis.defproxy.integration
 org.nebularis.defproxy.introspection
-org.nebularis.defproxy.utils
 org.nebularis.defproxy.validation
