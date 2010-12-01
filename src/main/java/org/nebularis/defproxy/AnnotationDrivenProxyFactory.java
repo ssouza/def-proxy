@@ -33,7 +33,7 @@ public class AnnotationDrivenProxyFactory implements ProxyFactory {
 
     @Override
     public <T> T createProxy(final Object delegate, final Class<T> proxyInterface) {
-        return null;
+        return createProxy(delegate, proxyInterface, new ProxyConfigurationBuilder(proxyInterface, delegate.getClass()));
     }
 
     @Override
