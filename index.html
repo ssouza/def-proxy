@@ -43,7 +43,34 @@
       <p>
         Creating a new proxy....
       </p>
-      <pre>final MyInterface proxy = defProxy(MyInterface.class, delegate);</pre>
+      <pre>
+final ProxyFactory factory = new AnnotationDrivenProxyFactory();
+final Map<String,String> delegate = new HashMap<String,String>();
+delegate.put("bar-code", "ABC55C666F");
+delegate.put("product-id", "12345")
+
+final Item proxy = factory.createProxy(delegate, Item.class);
+assert(proxy.barcode() == "ABC55C666F");
+assert(proxy.productId() == 12345);
+	  </pre>
+      <p>
+        Configuring your proxy interface
+      </p>
+      <pre>
+@ProxyInterface(delegate = StoredItem.class)
+public interface Item {
+
+    @ProxyDelegated(methodName = "get")
+    @ProxyArguments(value = {"bar-code"}, direction = Prefix)
+    String barcode();
+
+    @ProxyDelegated(methodName = "get")
+    @ProxyArguments(value = {"product-id"}, direction = Prefix)
+    @ProxyTypeConverter(provider = IntOfStringConverter.class)
+    int productId();
+
+}
+	  </pre>	
 	</div>
     <div id='more-information'>
       <h2>More Information</h2>
