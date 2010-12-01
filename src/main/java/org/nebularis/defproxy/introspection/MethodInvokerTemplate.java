@@ -87,6 +87,14 @@ public class MethodInvokerTemplate implements MethodInvoker {
      * @inheritDoc
      */
     @Override
+    public TypeConverter getTypeConverter() {
+        return converter;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    @Override
     public void setTypeConverter(final TypeConverter converter) {
         this.converter = converter;
     }

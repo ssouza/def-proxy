@@ -26,4 +26,18 @@ package org.nebularis.defproxy.introspection;
  * A factory for type converters. 
  */
 public interface TypeConverterFactory {
+
+    /**
+     * Create a {@link org.nebularis.defproxy.introspection.TypeConverter} for the specified
+     * input and output classes.
+     * @param inputClass the class of the input domain
+     * @param outputClass the class of the output domain
+     * @param <T1> The type of the input class
+     * @param <T2> The type of the output class
+     * @return a new {@link org.nebularis.defproxy.introspection.TypeConverter} instance, mapping
+     * from type <code>T1</code> to <code>T2</code>, or <code>null</code> if no matching converter
+     * can be set up for these two types.
+     */
+    <T1,T2> TypeConverter<T1,T2> createTypeConverter(Class<T1> inputClass, Class<T2> outputClass);
+
 }

@@ -30,11 +30,7 @@ import org.nebularis.defproxy.configuration.IncompatibleMethodMappingException;
 import org.nebularis.defproxy.configuration.InvalidMethodMappingException;
 import org.nebularis.defproxy.configuration.MappingException;
 import org.nebularis.defproxy.configuration.ProxyConfiguration;
-import org.nebularis.defproxy.introspection.MethodInvoker;
-import org.nebularis.defproxy.introspection.MethodInvokerTemplate;
-import org.nebularis.defproxy.introspection.MethodSignature;
-import org.nebularis.defproxy.introspection.TargetSiteWrapper;
-import org.nebularis.defproxy.introspection.TypeConverter;
+import org.nebularis.defproxy.introspection.*;
 import org.nebularis.defproxy.validation.MethodSignatureValidator;
 
 import java.util.HashMap;
@@ -48,7 +44,7 @@ import static org.nebularis.defproxy.introspection.ReflectionUtils.isAssignable;
  * Builder for proxy handler configurations. You use this class to
  * configure the wiring between your proxy interface and backing/delegate
  * object types.
- *
+ * <p/>
  * The framework supports direct mappings based on method signature,
  * variations in name, arity and argument/return types as well as
  * custom exception handling policies.
@@ -71,6 +67,8 @@ public class ProxyConfigurationBuilder {
     private final Class<?> delegateClass;
     private MethodSignatureValidator delegateValidator;
 
+    private TypeConverterFactory converterFactory;
+
     private final Map<MethodSignature, MethodSignature> directMappings = new HashMap<MethodSignature, MethodSignature>();
     private final Map<MethodSignature, TypeConverter> conversionMappings = new HashMap<MethodSignature, TypeConverter>();
     private final Map<MethodSignature, WrapperSlot> targetSiteWrappers = new HashMap<MethodSignature, WrapperSlot>();
@@ -82,6 +80,14 @@ public class ProxyConfigurationBuilder {
         this.delegateClass = delegateClass;
         setInterfaceValidator(new MethodSignatureValidator(interfaceClass));
         setDelegateValidator(new MethodSignatureValidator(delegateClass));
+    }
+
+    public TypeConverterFactory getTypeConverterFactory() {
+        return converterFactory;
+    }
+
+    public void setTypeConverterFactory(final TypeConverterFactory converterFactory) {
+        this.converterFactory = converterFactory;
     }
 
     public MethodSignatureValidator getInterfaceValidator() {
@@ -103,6 +109,7 @@ public class ProxyConfigurationBuilder {
     /**
      * Gets the delegated {@link org.nebularis.defproxy.introspection.MethodSignature} for
      * the supplied interface method.
+     *
      * @param interfaceMethod
      * @return
      */
@@ -113,6 +120,7 @@ public class ProxyConfigurationBuilder {
     /**
      * Delegates calls to the supplied {@link org.nebularis.defproxy.introspection.MethodSignature}
      * directly back to the delegate type, using the exact method signature supplied.
+     *
      * @param interfaceMethod
      */
     public void delegateMethod(final MethodSignature interfaceMethod) {
@@ -123,6 +131,7 @@ public class ProxyConfigurationBuilder {
      * Delegates calls to the supplied {@link org.nebularis.defproxy.introspection.MethodSignature}
      * directly back to the delegate type, using the mapped method name, and the return type
      * and parameter types of the interface method signature supplied.
+     *
      * @param interfaceMethod
      * @param mappedMethodName
      */
@@ -133,6 +142,7 @@ public class ProxyConfigurationBuilder {
 
     /**
      * Delegates calls to the interface method, directly to the supplied delegate method.
+     *
      * @param interfaceMethod
      * @param delegateMethod
      */
@@ -146,6 +156,7 @@ public class ProxyConfigurationBuilder {
      * Set a {@link org.nebularis.defproxy.introspection.TypeConverter} for the provided interface method.
      * Providing a converter means that the return type of the delegate method can differ from
      * that of the underlying delegate, providing that the type converter can massage values from one to the other.
+     *
      * @param interfaceMethod
      * @param converter
      */
@@ -155,6 +166,7 @@ public class ProxyConfigurationBuilder {
 
     /**
      * Wrap calls to the supplied delegateMethod with the specified (additional) parameters.
+     *
      * @param prefix
      * @param delegateMethod
      * @param params
@@ -166,6 +178,7 @@ public class ProxyConfigurationBuilder {
     /**
      * Generates a {@link org.nebularis.defproxy.configuration.ProxyConfiguration} for the current
      * builder state, throwing a checked exception if the mapping is in any way incorrect.
+     *
      * @return
      * @throws MappingException
      */
@@ -185,9 +198,8 @@ public class ProxyConfigurationBuilder {
             } else {
                 invoker = new MethodInvokerTemplate(delegateMethod);
             }
-            if (conversionMappings.containsKey(interfaceMethod)) {
-                invoker.setTypeConverter(conversionMappings.get(interfaceMethod));
-            }
+
+            invoker.setTypeConverter(getTypeConverter(interfaceMethod, delegateMethod));
             configuration.registerMethodInvoker(interfaceMethod, invoker);
         }
         return configuration;
@@ -201,21 +213,32 @@ public class ProxyConfigurationBuilder {
 
     public void checkCompatibility(MethodSignature interfaceMethod, MethodSignature delegateMethod) throws IncompatibleMethodMappingException {
         if (returnTypesAreCompatible(interfaceMethod, delegateMethod)) {
-           if (areParameterTypesCompatible(interfaceMethod, delegateMethod)) {
-               return;
-           }
+            if (areParameterTypesCompatible(interfaceMethod, delegateMethod)) {
+                return;
+            }
         }
         throw new IncompatibleMethodMappingException(interfaceMethod, delegateMethod);
     }
 
     private boolean returnTypesAreCompatible(final MethodSignature interfaceMethod, final MethodSignature delegateMethod) {
-        if (conversionMappings != null && conversionMappings.containsKey(interfaceMethod)) {
-            final TypeConverter converter = conversionMappings.get(interfaceMethod);
-            if (isAssignable(delegateMethod.getReturnType(), converter.getInputType())) {
-                return isAssignable(interfaceMethod.getReturnType(), converter.getOutputType());
-            }
+        final TypeConverter converter = getTypeConverter(interfaceMethod, delegateMethod);
+        if (converter != null && isAssignable(delegateMethod.getReturnType(), converter.getInputType())) {
+            return isAssignable(interfaceMethod.getReturnType(), converter.getOutputType());
         }
         return isAssignable(interfaceMethod.getReturnType(), delegateMethod.getReturnType());
+    }
+
+    private TypeConverter getTypeConverter(final MethodSignature interfaceMethod, final MethodSignature delegateMethod) {
+        TypeConverter converter = null;
+        if (conversionMappings.containsKey(interfaceMethod)) {
+            converter = conversionMappings.get(interfaceMethod);
+        } else if (converterFactory != null) {
+            converter = converterFactory.createTypeConverter(delegateMethod.getReturnType(), interfaceMethod.getReturnType());
+            if (converter != null) {
+                setTypeConverter(interfaceMethod, converter);
+            }
+        }
+        return converter;
     }
 
     private boolean areParameterTypesCompatible(final MethodSignature interfaceMethod, final MethodSignature delegateMethod) {
@@ -230,7 +253,7 @@ public class ProxyConfigurationBuilder {
                 }
                 return isAssignable(delegateMethod.getParameterTypes(), ClassUtils.toClass(slot.params));
             } else {
-                assert(slot.insertion.equals(Insertion.Suffix));
+                assert (slot.insertion.equals(Insertion.Suffix));
                 final Class[] inputTypes = new Class[delegateMethod.getParameterTypes().length];
                 final List<Class> inputClassList = asList(delegateMethod.getParameterTypes());
                 inputClassList.toArray(inputTypes);
