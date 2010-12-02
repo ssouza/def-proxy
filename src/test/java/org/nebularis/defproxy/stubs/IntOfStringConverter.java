@@ -23,8 +23,9 @@
 package org.nebularis.defproxy.stubs;
 
 import org.nebularis.defproxy.introspection.TypeConverter;
+import org.nebularis.defproxy.introspection.TypeConverterFactory;
 
-public class IntOfStringConverter implements TypeConverter<String,Integer> {
+public class IntOfStringConverter implements TypeConverter<String,Integer>, TypeConverterFactory {
 
     @Override
     public Class<? extends String> getInputType() {
@@ -41,4 +42,11 @@ public class IntOfStringConverter implements TypeConverter<String,Integer> {
         return Integer.parseInt(String.valueOf(o));
     }
 
+    @Override
+    public <T1, T2> TypeConverter<T1, T2> createTypeConverter(final Class<T1> inputClass, final Class<T2> outputClass) {
+        if (getInputType().isAssignableFrom(inputClass) && getOutputType().isAssignableFrom(outputClass)) {
+            return (TypeConverter<T1, T2>) this;
+        }
+        return null;
+    }
 }
