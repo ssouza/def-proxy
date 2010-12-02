@@ -25,8 +25,10 @@ package org.nebularis.defproxy;
 import java.lang.reflect.Method;
 
 import org.apache.commons.lang.Validate;
+import org.nebularis.defproxy.annotations.ProxyArguments;
 import org.nebularis.defproxy.annotations.ProxyInterface;
 import org.nebularis.defproxy.annotations.ProxyMethod;
+import org.nebularis.defproxy.annotations.ProxyTypeConverter;
 import org.nebularis.defproxy.configuration.ProxyConfigurationBuilder;
 import org.nebularis.defproxy.introspection.MethodSignature;
 
@@ -57,11 +59,20 @@ public class AnnotationDrivenProxyFactory implements ProxyFactory {
     	}
     	
     	for(Method method:proxyInterface.getMethods()){
+    		
+    		//Get the annotations from the method
     		ProxyMethod methodAnnotation = method.getAnnotation(ProxyMethod.class);
+    		ProxyArguments proxyArguments = method.getAnnotation(ProxyArguments.class);
+    		ProxyTypeConverter proxyTypeConverter = method.getAnnotation(ProxyTypeConverter.class);
+    		
     		Class<?> returnType = method.getReturnType();    		
 			String interfaceMethodName = method.getName();
 			MethodSignature interfaceMethod = new MethodSignature(returnType, interfaceMethodName);
-    		
+			//Check if any additional proxy arguments are provided
+			if(proxyArguments!=null){
+    			builder.wrapDelegate(proxyArguments.direction(), interfaceMethod, proxyArguments.value());   			
+    		}
+			
     		if(methodAnnotation!=null){    			  			
     			String delegateMethodName = methodAnnotation.methodName();
     			MethodSignature delegateMethod = new MethodSignature(returnType, delegateMethodName);

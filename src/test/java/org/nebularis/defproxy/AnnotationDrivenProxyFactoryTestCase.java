@@ -35,6 +35,7 @@ import junit.framework.Assert;
 import org.jmock.integration.junit4.JMock;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.nebularis.defproxy.annotations.Insertion;
 import org.nebularis.defproxy.annotations.ProxyArguments;
 import org.nebularis.defproxy.annotations.ProxyInterface;
 import org.nebularis.defproxy.annotations.ProxyMethod;
@@ -96,6 +97,7 @@ public class AnnotationDrivenProxyFactoryTestCase extends AbstractJMockTestSuppo
 		 int test();
 	}
 	
+	// mapping methods with methodName property set, should call builder (see builder test case)
 	@Test
 	public void testAllMethodsAreDelegatedOnProxy(){
 		AnnotationDrivenProxyFactory factory = new AnnotationDrivenProxyFactory();
@@ -110,6 +112,7 @@ public class AnnotationDrivenProxyFactoryTestCase extends AbstractJMockTestSuppo
 		 int getProductId();
 	}
 	
+	// mapping methods not using ProxyDelegated should call builder.delegateMethod(interfaceMethod);
 	@Test
 	public void testAllMethodsAreDelegatedOnProxyEvenWithoutAnnotation(){
 		AnnotationDrivenProxyFactory factory = new AnnotationDrivenProxyFactory();
@@ -119,13 +122,46 @@ public class AnnotationDrivenProxyFactoryTestCase extends AbstractJMockTestSuppo
 		factory.createProxy(new Object(), TestMethodsWithoutAnnotation.class,builder);
 	}
 	
-    // mapping methods not using ProxyDelegated should call builder.delegateMethod(interfaceMethod);
-
-    // mapping methods with methodName property set, should call builder (see builder test case)
+	@ProxyInterface(delegate=StoredItem.class)
+	public interface TestMethodsWithProxyArgumentAnnotation{
+		@ProxyMethod(methodName = "get")
+	    @ProxyArguments(value = {"bar-code"}, direction = Prefix) 
+	    String barcode();
+	}
+	
+	// mapping methods with ProxyArguments set, should call builder.wrapDelegate (see builder test case)
+	@Test
+	public void testAllMethodWithProxyArgumentsSetShouldWrapTheResult(){
+		AnnotationDrivenProxyFactory factory = new AnnotationDrivenProxyFactory();
+		final ProxyConfigurationBuilder builder = mock(ProxyConfigurationBuilder.class);
+		one(builder).wrapDelegate(Insertion.Prefix, new MethodSignature(String.class, "barcode"), "bar-code");
+        one(builder).delegateMethod(new MethodSignature(String.class, "barcode"),new MethodSignature(String.class, "get"));
+        confirmExpectations();
+		factory.createProxy(new Object(), TestMethodsWithProxyArgumentAnnotation.class,builder);
+	}
+    
 
     // mapping methods with methodInvocationHandler set, should call builder (see builder test case)
+	@ProxyInterface(delegate=StoredItem.class)
+	public interface TestMethodsWithProxyTypeConverterSet{
+		@ProxyMethod(methodName = "get")
+	    @ProxyArguments(value = {"bar-code"}, direction = Prefix)
+	    @ProxyTypeConverter(provider=IntOfStringConverter.class)
+	    String barcode();
+	}
+	
+	// mapping methods with ProxyArguments set, should call builder.wrapDelegate (see builder test case)
+	@Test
+	public void testAllMethodWithProxyTypeConverterSet(){
+		AnnotationDrivenProxyFactory factory = new AnnotationDrivenProxyFactory();
+		final ProxyConfigurationBuilder builder = mock(ProxyConfigurationBuilder.class);
+		one(builder).wrapDelegate(Insertion.Prefix, new MethodSignature(String.class, "barcode"), "bar-code");
+        one(builder).delegateMethod(new MethodSignature(String.class, "barcode"),new MethodSignature(String.class, "get"));
+        
+        confirmExpectations();
+		factory.createProxy(new Object(), TestMethodsWithProxyTypeConverterSet.class,builder);
+	}
 
-    // mapping methods with ProxyArguments set, should call builder.wrapDelegate (see builder test case)
 
     // getting annotations from methods should be done in a safe/defensive manner
 

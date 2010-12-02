@@ -21,26 +21,34 @@
  */
 package org.nebularis.defproxy.configuration;
 
-import org.apache.commons.lang.NotImplementedException;
-import org.jmock.integration.junit4.JMock;
-import org.junit.Ignore;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.nebularis.defproxy.annotations.Insertion;
-import org.nebularis.defproxy.introspection.*;
-import org.nebularis.defproxy.stubs.*;
-import org.nebularis.defproxy.test.AbstractJMockTestSupport;
-import org.nebularis.defproxy.validation.MethodSignatureValidator;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.sameInstance;
+import static org.hamcrest.core.Is.is;
+import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.CoreMatchers.sameInstance;
-import static org.hamcrest.Matchers.instanceOf;
-import static org.hamcrest.core.Is.is;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
+import org.jmock.integration.junit4.JMock;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.nebularis.defproxy.annotations.Insertion;
+import org.nebularis.defproxy.introspection.MethodInvoker;
+import org.nebularis.defproxy.introspection.MethodSignature;
+import org.nebularis.defproxy.introspection.TypeConverter;
+import org.nebularis.defproxy.introspection.TypeConverterFactory;
+import org.nebularis.defproxy.stubs.Baz;
+import org.nebularis.defproxy.stubs.FooBar;
+import org.nebularis.defproxy.stubs.Item;
+import org.nebularis.defproxy.stubs.MyDelegate;
+import org.nebularis.defproxy.stubs.MyProxyInterface;
+import org.nebularis.defproxy.stubs.SimpleDelegate;
+import org.nebularis.defproxy.stubs.SimpleInterface;
+import org.nebularis.defproxy.stubs.SomeProxyInterface;
+import org.nebularis.defproxy.stubs.StoredItem;
+import org.nebularis.defproxy.test.AbstractJMockTestSupport;
+import org.nebularis.defproxy.validation.MethodSignatureValidator;
 
 @RunWith(JMock.class)
 public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport {
