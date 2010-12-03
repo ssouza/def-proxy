@@ -160,6 +160,29 @@ public class MethodSignatureTestCase extends ObjectEqualityAndHashCodeVerifier<M
         assertThat(sig.resolveToMethod(MyProxyInterface.class), is(equalTo(checkIdentity)));
     }
 
+    @Test
+    public void primativeWrapperClassesShouldBeHandledInToOneMappings() throws MappingException, NoSuchMethodException {
+        final Method checkIdentity = MyProxyInterface.class.getMethod("checkIdentity", String.class, int.class);
+        final MethodSignature sig = new MethodSignature(void.class, "checkIdentity", String.class, Integer.class);
+        assertThat(sig.resolveToMethod(MyProxyInterface.class), is(equalTo(checkIdentity)));
+    }
+
+    @Test
+    public void coVariantParameterTypesShouldBeOk() throws NoSuchMethodException, InvalidMethodMappingException {
+        final Method checkCompatibility =
+            FooBar.class.getMethod("checkCompatibility", FooBar.class, String.class);
+        final MethodSignature sig = new MethodSignature(boolean.class, "checkCompatibility", Baz.class, String.class);
+        assertThat(sig.resolveToMethod(FooBar.class), is(equalTo(checkCompatibility)));
+    }
+
+    @Test(expected = InvalidMethodMappingException.class)
+    public void contraVariantParameterTypesShouldBeOk() throws NoSuchMethodException, InvalidMethodMappingException {
+        final Method checkCompatibility =
+            FooBar.class.getMethod("checkCompatibility", FooBar.class, String.class);
+        final MethodSignature sig = new MethodSignature(boolean.class, "checkCompatibility", Object.class, String.class);
+        sig.resolveToMethod(FooBar.class);
+    }
+
     private Matcher<Class[]> assignableFrom(final Class[] types) {
         return new TypeSafeMatcher<Class[]>() {
             @Override
