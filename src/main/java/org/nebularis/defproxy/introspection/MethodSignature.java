@@ -28,6 +28,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import java.lang.reflect.Method;
 
+import static org.nebularis.defproxy.introspection.ReflectionUtils.isAssignable;
+
 /**
  * Represents a method signature (though not its calling convention).
  */
@@ -65,14 +67,22 @@ public final class MethodSignature {
     }
 
     /**
-     * 
-     * @param other
-     * @return
+     * Returns <code>true</code> if this {@link org.nebularis.defproxy.introspection.MethodSignature}
+     * is compatible in its {@link org.nebularis.defproxy.introspection.MethodSignature#returnType} and
+     * {@link org.nebularis.defproxy.introspection.MethodSignature#parameterTypes} with the other supplied.
+     * @param other the {@link org.nebularis.defproxy.introspection.MethodSignature} with which to compare this instance.
+     * @return <code>true</code> if this instance is compatible with <code>other</code>, otherwise <code>false</code>.
      */
     public boolean isCompatibleWith(final MethodSignature other) {
-        return this.equals(other);
+        if (isAssignable(getReturnType(), other.getReturnType())) {
+            return isAssignable(getParameterTypes(), other.getParameterTypes());
+        }
+        return false;
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public int hashCode() {
         return new HashCodeBuilder()
@@ -82,11 +92,17 @@ public final class MethodSignature {
                 .toHashCode();
     }
 
+    /**
+     * @inheritDoc
+     */
     @Override
     public boolean equals(final Object o) {
         return (o instanceof MethodSignature) && equals((MethodSignature)o);
     }
 
+    /**
+     * @inheritDoc
+     */
     public boolean equals(final MethodSignature ms) {
         return ms != null && new EqualsBuilder()
                 .append(returnType, ms.returnType)

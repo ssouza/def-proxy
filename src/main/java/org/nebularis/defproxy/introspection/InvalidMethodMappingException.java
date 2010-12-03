@@ -20,21 +20,29 @@
  * under the License.
  */
 
-package org.nebularis.defproxy.configuration;
+package org.nebularis.defproxy.introspection;
 
-import org.nebularis.defproxy.configuration.MappingException;
+import org.nebularis.defproxy.introspection.MappingException;
 import org.nebularis.defproxy.introspection.MethodSignature;
 
 /**
- * Thrown when two methods have incompatible signatures and no
- * {@link org.nebularis.defproxy.introspection.TypeConverter} has been specified.
+ * Thrown when a mapping is declared to (or from) a method that
+ * isn't valid for the supplied (interface or delegate) type.
  */
-public class IncompatibleMethodMappingException extends MappingException {
+public class InvalidMethodMappingException extends MappingException {
 
-    private final MethodSignature targetSig;
+    private final Class<?> targetType;
 
-    public IncompatibleMethodMappingException(MethodSignature srcSig, MethodSignature targetSig) {
-        super(srcSig);
-        this.targetSig = targetSig;
+    public InvalidMethodMappingException(final MethodSignature sig, final Class<?> targetType) {
+        super(sig);
+        this.targetType = targetType;
+    }
+
+    public MethodSignature getInvalidMethodSignature() {
+        return sig;
+    }
+
+    public Class<?> getTargetType() {
+        return targetType;
     }
 }

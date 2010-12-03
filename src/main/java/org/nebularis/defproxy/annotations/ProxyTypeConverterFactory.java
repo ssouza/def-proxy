@@ -41,14 +41,14 @@ import java.lang.annotation.Target;
  * class <b>must</b> expose a no-argument public constructor.
  *
  * <pre>
- *      &#064;ProxyInterface(delegate = HashMap.class)
- *      &#064;ProxyTypeConverterFactory(provider = MyConverterFactory.class)
- *      public interface Item {
+ * &#064;ProxyInterface(delegate = HashMap.class)
+ * &#064;ProxyTypeConverterFactory(provider = MyConverterFactory.class)
+ * public interface Item {
  *
- *          &#064;ProxyDelegated(methodName = "get")
- *          &#064;ProxyArguments(value = {"product-id"}, direction = Prefix)
- *          int productId();
- *      }
+ *     &#064;ProxyDelegated(methodName = "get")
+ *     &#064;ProxyArguments(value = {"product-id"}, direction = Prefix)
+ *     int productId();
+ * }
  * </pre>
  */
 @Retention(RetentionPolicy.RUNTIME)

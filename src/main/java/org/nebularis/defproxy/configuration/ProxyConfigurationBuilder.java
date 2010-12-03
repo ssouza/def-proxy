@@ -33,12 +33,7 @@ import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ClassUtils;
 import org.apache.commons.lang.Validate;
 import org.nebularis.defproxy.annotations.Insertion;
-import org.nebularis.defproxy.introspection.MethodInvoker;
-import org.nebularis.defproxy.introspection.MethodInvokerTemplate;
-import org.nebularis.defproxy.introspection.MethodSignature;
-import org.nebularis.defproxy.introspection.TargetSiteWrapper;
-import org.nebularis.defproxy.introspection.TypeConverter;
-import org.nebularis.defproxy.introspection.TypeConverterFactory;
+import org.nebularis.defproxy.introspection.*;
 import org.nebularis.defproxy.validation.MethodSignatureValidator;
 
 /**
@@ -207,6 +202,7 @@ public class ProxyConfigurationBuilder {
             check(delegateMethod, getDelegateValidator(), delegateClass);
             checkCompatibility(interfaceMethod, delegateMethod);
 
+            // Q: where does this code belong?
             MethodInvoker invoker;
             if (targetSiteWrappers.containsKey(delegateMethod)) {
                 final WrapperSlot slot = targetSiteWrappers.get(delegateMethod);

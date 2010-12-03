@@ -20,7 +20,7 @@
  * under the License.
  */
 
-package org.nebularis.defproxy.configuration;
+package org.nebularis.defproxy.introspection;
 
 import org.nebularis.defproxy.introspection.MethodSignature;
 

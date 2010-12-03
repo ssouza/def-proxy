@@ -73,6 +73,10 @@ public class AnnotationDrivenProxyFactory implements ProxyFactory {
             final ProxyMethod methodAnnotation = wrapperMethod.getAnnotation(ProxyMethod.class);
             if (methodAnnotation != null) {
                 String delegateMethodName = methodAnnotation.methodName();
+
+
+
+
                 MethodSignature delegateMethod = null;
 
                 final Method[] candidateMethods = delegate.getClass().getMethods();
