@@ -135,6 +135,7 @@ public class AnnotationDrivenProxyFactory implements ProxyFactory {
                         "Unable to instantiate ProxyTypeConverterFactory class1.", e);
             }
         }
+        return null;
     }
 
     private TypeConverterFactory configureTypeLevelConverter(final Class<?> proxyInterface, final ProxyConfigurationBuilder builder) {
@@ -149,6 +150,7 @@ public class AnnotationDrivenProxyFactory implements ProxyFactory {
                         "Unable to instantiate ProxyTypeConverterFactory class1.", e);
             } 
         }
+        return null;
     }
 
     private <T> void verifyProxyInterface(final Object delegate, final Class<T> proxyInterface, final ProxyConfigurationBuilder builder) {

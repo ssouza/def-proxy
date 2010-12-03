@@ -64,6 +64,15 @@ public final class MethodSignature {
         return new MethodSignature(method.getReturnType(), method.getName(), method.getParameterTypes());
     }
 
+    /**
+     * 
+     * @param other
+     * @return
+     */
+    public boolean isCompatibleWith(final MethodSignature other) {
+        return this.equals(other);
+    }
+
     @Override
     public int hashCode() {
         return new HashCodeBuilder()

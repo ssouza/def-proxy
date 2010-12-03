@@ -21,6 +21,9 @@
  */
 package org.nebularis.defproxy.introspection;
 
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoint;
 import org.junit.experimental.theories.Theories;
@@ -53,6 +56,25 @@ public class MethodSignatureTestCase extends ObjectEqualityAndHashCodeVerifier<M
         final Object check = new Object();
         map.put(sig, check);
         assertThat(map.get(sig), is(sameInstance(check)));
+    }
+
+    @Theory
+    public void identicalMethodSignaturesShouldAlwaysBeCompatible(final MethodSignature m1, final MethodSignature m2) {
+        assumeThat(m1, is(equalTo(m2)));
+        assertThat(m1, is(compatibleWith(m2)));
+    }
+
+    private Matcher<MethodSignature> compatibleWith(final MethodSignature sig) {
+        return new TypeSafeMatcher<MethodSignature>() {
+
+            @Override
+            public boolean matchesSafely(final MethodSignature methodSignature) {
+                return sig.isCompatibleWith(methodSignature);
+            }
+
+            @Override
+            public void describeTo(final Description description) {}
+        };
     }
 
     @Test(expected = IllegalArgumentException.class)
@@ -94,6 +116,21 @@ public class MethodSignatureTestCase extends ObjectEqualityAndHashCodeVerifier<M
 
     @DataPoint
     public static Object o = new Object();
+
+    @DataPoint
+    public static MethodSignature twoParams = new MethodSignature(Class.class, "foobar", String.class, FooBar.class);
+
+    @DataPoint
+    public static MethodSignature twoParamsCoVariant2ndArg =
+            new MethodSignature(Boolean.class, "foobar", String.class, Baz.class);
+
+    @DataPoint
+    public static MethodSignature twoParamsCoVariant2ndArgAndRetType =
+            new MethodSignature(boolean.class, "foobar", String.class, Baz.class);
+
+    @DataPoint
+    public static MethodSignature twoParamsContraVariant2ndArg =
+            new MethodSignature(Class.class, "foobar", String.class, Object.class);
 
     @DataPoint
     public static MethodSignature retClass = new MethodSignature(Class.class, "foobar");

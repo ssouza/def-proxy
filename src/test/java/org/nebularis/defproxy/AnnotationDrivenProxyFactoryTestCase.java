@@ -48,6 +48,7 @@ import org.nebularis.defproxy.introspection.TypeConverterFactory;
 import org.nebularis.defproxy.stubs.*;
 import org.nebularis.defproxy.test.AbstractJMockTestSupport;
 
+@Ignore
 @RunWith(JMock.class)
 public class AnnotationDrivenProxyFactoryTestCase extends AbstractJMockTestSupport {
 
