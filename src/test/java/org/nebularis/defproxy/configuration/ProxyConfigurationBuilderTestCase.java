@@ -165,7 +165,7 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
     }
 
     @Test
-    public void invalidDelegateParameterTypesWillThrow() throws MappingException{
+    public void invalidDelegateParameterTypesWillThrow() throws MappingException {
         final MethodSignature interfaceMethod =
                 new MethodSignature(void.class, "checkIdentity", String.class, int.class);
         final MethodSignature delegateMethod =
@@ -192,6 +192,7 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
         builder.generateProxyConfiguration();
     }
 
+    @Ignore("Subsumed by MethodSignatureTranslator")
     @Test(expected = IncompatibleMethodMappingException.class)
     public void mappingToMethodWithIncompatibleReturnTypeWillThrow() throws MappingException {
         final MethodSignature interfaceMethod = new MethodSignature(String.class, "getName");

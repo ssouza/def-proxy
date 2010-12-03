@@ -57,11 +57,8 @@ public class MethodSignatureTranslator {
 
         final MethodSignature delegateMethod = getDelegateMethod();
         final Method delegateTargetSite = delegateMethod.resolveToMethod(delegateType);
-        if (!delegateValidator.check(delegateMethod)) {
-            if (!isAssignable(delegateTargetSite.getReturnType(), interfaceMethod.getReturnType())) {
-                throw new IncompatibleMethodMappingException(interfaceMethod, delegateMethod);
-            }
-            throw new InvalidMethodMappingException(delegateMethod, delegateType);
+        if (!isAssignable(delegateTargetSite.getReturnType(), interfaceMethod.getReturnType())) {
+            throw new IncompatibleMethodMappingException(interfaceMethod, delegateMethod);
         }
     }
 
