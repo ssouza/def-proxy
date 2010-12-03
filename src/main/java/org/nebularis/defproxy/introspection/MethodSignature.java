@@ -28,6 +28,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 import java.lang.reflect.Method;
 
+import static org.apache.commons.beanutils.MethodUtils.getMatchingAccessibleMethod;
 import static org.nebularis.defproxy.introspection.ReflectionUtils.isAssignable;
 
 /**
@@ -78,6 +79,15 @@ public final class MethodSignature {
             return isAssignable(getParameterTypes(), other.getParameterTypes());
         }
         return false;
+    }
+
+    public Method resolveToMethod(final Class<?> providerClass) throws InvalidMethodMappingException {
+        final Method method = getMatchingAccessibleMethod(providerClass, name, parameterTypes);
+        if (method != null && isAssignable(returnType, method.getReturnType())) {
+            return method;
+        } else {
+            throw new InvalidMethodMappingException(this, providerClass);
+        }
     }
 
     /**

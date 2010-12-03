@@ -24,15 +24,19 @@ package org.nebularis.defproxy.introspection;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
+import org.hamcrest.core.Is;
 import org.junit.AfterClass;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoint;
 import org.junit.experimental.theories.Theories;
 import org.junit.experimental.theories.Theory;
 import org.junit.runner.RunWith;
+import org.nebularis.defproxy.configuration.ProxyConfigurationBuilder;
 import org.nebularis.defproxy.introspection.MethodSignature;
 import org.nebularis.defproxy.stubs.Baz;
 import org.nebularis.defproxy.stubs.FooBar;
+import org.nebularis.defproxy.stubs.MyDelegate;
+import org.nebularis.defproxy.stubs.MyProxyInterface;
 import org.nebularis.defproxy.test.ObjectEqualityAndHashCodeVerifier;
 
 import java.lang.reflect.Method;
@@ -45,6 +49,7 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.Matchers.sameInstance;
 import static org.hamcrest.core.IsNot.not;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 import static org.junit.Assume.assumeThat;
 import static org.nebularis.defproxy.introspection.ReflectionUtils.isAssignable;
 
@@ -109,6 +114,50 @@ public class MethodSignatureTestCase extends ObjectEqualityAndHashCodeVerifier<M
     @Test(expected = IllegalArgumentException.class)
     public void supplyingNullForAnyParameterTypeArrayMemberWillThrow() {
         new MethodSignature(String.class, "method1", String.class, null, Integer.class);
+    }
+
+    @Test
+    public void invalidMethodNamesWillThrow() throws MappingException {
+        final MethodSignature interfaceMethod = new MethodSignature(String.class, "getNaame");
+        try {
+            interfaceMethod.resolveToMethod(MyProxyInterface.class);
+            fail("should not have gotten this far!");
+        } catch (InvalidMethodMappingException e) {
+            assertThat(e.getInvalidMethodSignature(), Is.is(equalTo(interfaceMethod)));
+            assertThat((Class) e.getTargetType(), Is.is(equalTo((Class)MyProxyInterface.class)));
+        }
+    }
+
+    @Test
+    public void invalidReturnTypesWillThrow() throws MappingException {
+        final MethodSignature interfaceMethod = new MethodSignature(void.class, "getName");
+        try {
+            interfaceMethod.resolveToMethod(MyProxyInterface.class);
+            fail("should not have gotten this far!");
+        } catch (InvalidMethodMappingException e) {
+            assertThat(e.getInvalidMethodSignature(), Is.is(equalTo(interfaceMethod)));
+            assertThat((Class) e.getTargetType(), Is.is(equalTo((Class)MyProxyInterface.class)));
+        }
+    }
+
+    @Test
+    public void invalidParameterTypesWillThrow() throws MappingException {
+        final MethodSignature interfaceMethod =
+                new MethodSignature(void.class, "checkIdentity", String.class, String.class);
+        try {
+            interfaceMethod.resolveToMethod(MyProxyInterface.class);
+            fail("should not have gotten this far!");
+        } catch (InvalidMethodMappingException e) {
+            assertThat(e.getInvalidMethodSignature(), Is.is(equalTo(interfaceMethod)));
+            assertThat((Class) e.getTargetType(), Is.is(equalTo((Class)MyProxyInterface.class)));
+        }
+    }
+
+    @Test
+    public void oneToOneMappingsDoNotFail() throws MappingException, NoSuchMethodException {
+        final Method checkIdentity = MyProxyInterface.class.getMethod("checkIdentity", String.class, int.class);
+        final MethodSignature sig = MethodSignature.fromMethod(checkIdentity);
+        assertThat(sig.resolveToMethod(MyProxyInterface.class), is(equalTo(checkIdentity)));
     }
 
     private Matcher<Class[]> assignableFrom(final Class[] types) {

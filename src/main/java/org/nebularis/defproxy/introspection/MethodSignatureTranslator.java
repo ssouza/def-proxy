@@ -10,6 +10,7 @@ public class MethodSignatureTranslator {
 
     private MethodSignature interfaceMethod;
     private Class<?> interfaceType;
+    private Class<?> delegateType;
 
     public MethodSignatureTranslator(final MethodSignature interfaceMethod,
                                      final Class<?> interfaceType, final Class<?> delegateType) {
@@ -18,9 +19,11 @@ public class MethodSignatureTranslator {
         Validate.notNull(delegateType, "Delegate type cannot be null.");
         this.interfaceMethod = interfaceMethod;
         this.interfaceType = interfaceType;
+        this.delegateType = delegateType;
     }
 
     public void verifyMethodSignatures() throws MappingException {
+        // interfaceMethod.resolveMethodSignature(interfaceType);
         throw new InvalidMethodMappingException(interfaceMethod, interfaceType);
     }
 
@@ -30,5 +33,13 @@ public class MethodSignatureTranslator {
 
     public Class<?> getInterfaceType() {
         return interfaceType;
+    }
+
+    public MethodSignature getDelegateMethod() {
+        return new MethodSignature(interfaceMethod);
+    }
+
+    public Class<?> getDelegateType() {
+        return delegateType;
     }
 }

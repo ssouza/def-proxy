@@ -1,7 +1,9 @@
 package org.nebularis.defproxy.introspection;
 
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
+import org.nebularis.defproxy.stubs.ComplexDelegate;
 import org.nebularis.defproxy.stubs.SimpleDelegate;
 import org.nebularis.defproxy.stubs.SimpleInterface;
 
@@ -41,6 +43,20 @@ public class MethodSignatureTranslatorTestCase {
         }
     }
 
-
+    @Ignore("Migrating to MethodSignature")
+    @Test
+    public void invalidDelegateMethodSignaturesShouldThrow() throws MappingException {
+        final MethodSignatureTranslator translator =
+                new MethodSignatureTranslator(new MethodSignature(void.class, "method1"),
+                        SimpleInterface.class, ComplexDelegate.class);
+        try {
+            translator.verifyMethodSignatures();
+            Assert.fail();
+        } catch (InvalidMethodMappingException e) {
+            assertThat(e.getInvalidMethodSignature(), is(equalTo(translator.getDelegateMethod())));
+            assertThat((Class<ComplexDelegate>)e.getTargetType(),
+                    is(equalTo((Class<ComplexDelegate>)translator.getDelegateType())));
+        }
+    }
 
 }
