@@ -1,6 +1,7 @@
 package org.nebularis.defproxy.introspection;
 
 import org.apache.commons.lang.Validate;
+import org.nebularis.defproxy.validation.MethodSignatureValidator;
 
 import java.lang.reflect.Method;
 
@@ -14,7 +15,9 @@ public class MethodSignatureTranslator {
 
     private final MethodSignature interfaceMethod;
     private final Class<?> interfaceType;
+    private MethodSignatureValidator interfaceValidator;
     private final Class<?> delegateType;
+    private MethodSignatureValidator delegateValidator;
     private String delegateMethodNameOverride;
 
     public MethodSignatureTranslator(final MethodSignature interfaceMethod,
@@ -25,16 +28,40 @@ public class MethodSignatureTranslator {
         this.interfaceMethod = interfaceMethod;
         this.interfaceType = interfaceType;
         this.delegateType = delegateType;
+        setInterfaceValidator(new MethodSignatureValidator(interfaceType));
+        setDelegateValidator(new MethodSignatureValidator(delegateType));
+    }
+
+    public MethodSignatureValidator getInterfaceValidator() {
+        return interfaceValidator;
+    }
+
+    public void setInterfaceValidator(final MethodSignatureValidator interfaceValidator) {
+        this.interfaceValidator = interfaceValidator;
+    }
+
+    public MethodSignatureValidator getDelegateValidator() {
+        return delegateValidator;
+    }
+
+    public void setDelegateValidator(final MethodSignatureValidator delegateValidator) {
+        this.delegateValidator = delegateValidator;
     }
 
     public void verifyMethodSignatures() throws MappingException {
         /*final Method originCallee = */
+        if (!interfaceValidator.check(interfaceMethod)) {
+            throw new InvalidMethodMappingException(interfaceMethod, interfaceType);
+        }
         interfaceMethod.resolveToMethod(interfaceType);
-        final MethodSignature delegateMethod = getDelegateMethod();
 
+        final MethodSignature delegateMethod = getDelegateMethod();
         final Method delegateTargetSite = delegateMethod.resolveToMethod(delegateType);
-        if (!isAssignable(delegateTargetSite.getReturnType(), interfaceMethod.getReturnType())) {
-            throw new IncompatibleMethodMappingException(interfaceMethod, delegateMethod);
+        if (!delegateValidator.check(delegateMethod)) {
+            if (!isAssignable(delegateTargetSite.getReturnType(), interfaceMethod.getReturnType())) {
+                throw new IncompatibleMethodMappingException(interfaceMethod, delegateMethod);
+            }
+            throw new InvalidMethodMappingException(delegateMethod, delegateType);
         }
     }
 
