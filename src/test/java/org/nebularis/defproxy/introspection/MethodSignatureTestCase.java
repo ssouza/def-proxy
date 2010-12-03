@@ -26,6 +26,7 @@ import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.hamcrest.core.Is;
 import org.junit.AfterClass;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.experimental.theories.DataPoint;
 import org.junit.experimental.theories.Theories;
@@ -128,6 +129,7 @@ public class MethodSignatureTestCase extends ObjectEqualityAndHashCodeVerifier<M
         }
     }
 
+    @Ignore("Migrating to MethodSignatureTranslator")
     @Test
     public void invalidReturnTypesWillThrow() throws MappingException {
         final MethodSignature interfaceMethod = new MethodSignature(void.class, "getName");

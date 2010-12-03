@@ -4,6 +4,8 @@ import org.apache.commons.lang.Validate;
 
 import java.lang.reflect.Method;
 
+import static org.nebularis.defproxy.introspection.ReflectionUtils.isAssignable;
+
 /**
  * Encapsulates the transition between a method declared on a proxy interface
  * and a target site mapped onto a delegate object.
@@ -30,11 +32,8 @@ public class MethodSignatureTranslator {
         interfaceMethod.resolveToMethod(interfaceType);
         final MethodSignature delegateMethod = getDelegateMethod();
 
-        try {
-            /*final Method delegateTargetSite = */
-            delegateMethod.resolveToMethod(delegateType);
-        } catch (InvalidReturnTypeMappingException e) {
-            // why did this happen?
+        final Method delegateTargetSite = delegateMethod.resolveToMethod(delegateType);
+        if (!isAssignable(delegateTargetSite.getReturnType(), interfaceMethod.getReturnType())) {
             throw new IncompatibleMethodMappingException(interfaceMethod, delegateMethod);
         }
     }
