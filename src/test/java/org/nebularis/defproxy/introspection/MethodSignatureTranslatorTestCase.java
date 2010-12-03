@@ -43,7 +43,6 @@ public class MethodSignatureTranslatorTestCase {
         }
     }
 
-    @Ignore("Migrating to MethodSignature")
     @Test
     public void invalidDelegateMethodSignaturesShouldThrow() throws MappingException {
         final MethodSignatureTranslator translator =

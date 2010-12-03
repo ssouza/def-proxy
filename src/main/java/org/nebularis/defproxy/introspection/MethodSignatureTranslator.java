@@ -2,15 +2,17 @@ package org.nebularis.defproxy.introspection;
 
 import org.apache.commons.lang.Validate;
 
+import java.lang.reflect.Method;
+
 /**
  * Encapsulates the transition between a method declared on a proxy interface
  * and a target site mapped onto a delegate object.
  */
 public class MethodSignatureTranslator {
 
-    private MethodSignature interfaceMethod;
-    private Class<?> interfaceType;
-    private Class<?> delegateType;
+    private final MethodSignature interfaceMethod;
+    private final Class<?> interfaceType;
+    private final Class<?> delegateType;
 
     public MethodSignatureTranslator(final MethodSignature interfaceMethod,
                                      final Class<?> interfaceType, final Class<?> delegateType) {
@@ -23,8 +25,10 @@ public class MethodSignatureTranslator {
     }
 
     public void verifyMethodSignatures() throws MappingException {
-        // interfaceMethod.resolveMethodSignature(interfaceType);
-        throw new InvalidMethodMappingException(interfaceMethod, interfaceType);
+        /*final Method originCallee = */
+        interfaceMethod.resolveToMethod(interfaceType);
+        /*final Method delegateTargetSite = */
+        getDelegateMethod().resolveToMethod(delegateType);
     }
 
     public MethodSignature getInterfaceMethod() {
@@ -36,6 +40,17 @@ public class MethodSignatureTranslator {
     }
 
     public MethodSignature getDelegateMethod() {
+        // TODO: examine the tuple (typeConv, proxyAdditionalArgs, altName) and generate the appropriate method signature
+
+        // some (most ?) of these calculations currently live in the proxy configuration builder so move tests + code
+
+        /*final String name = (mappedName != null) ? mappedName : interfaceMethod.getName();
+        // final TypeConverter typeConverter = getTypeConverterIfAvailable();
+        // AdditionalArguments additionalParams;
+        final Class<?> returnType = figureOutTheReturnType();
+        final Class[] parameterTypes = calculateParameterTypes();
+        return new MethodSignature(returnType, name, parameterTypes);*/
+
         return new MethodSignature(interfaceMethod);
     }
 

@@ -48,16 +48,6 @@ import org.nebularis.defproxy.validation.MethodSignatureValidator;
 public class ProxyConfigurationBuilder {
     private ExceptionHandlingPolicy globalExceptionHandlingPolicy;
 
-    private static class WrapperSlot {
-        public final Insertion insertion;
-        public final Object[] params;
-
-        public WrapperSlot(final Insertion insertion, final Object[] params) {
-            this.insertion = insertion;
-            this.params = params;
-        }
-    }
-
     private final Class<?> interfaceClass;
     private MethodSignatureValidator interfaceValidator;
 
@@ -68,7 +58,7 @@ public class ProxyConfigurationBuilder {
 
     private final Map<MethodSignature, MethodSignature> directMappings = new HashMap<MethodSignature, MethodSignature>();
     private final Map<MethodSignature, TypeConverter> conversionMappings = new HashMap<MethodSignature, TypeConverter>();
-    private final Map<MethodSignature, WrapperSlot> targetSiteWrappers = new HashMap<MethodSignature, WrapperSlot>();
+    private final Map<MethodSignature, AdditionalArguments> targetSiteWrappers = new HashMap<MethodSignature, AdditionalArguments>();
     private final Map<MethodSignature, ExceptionHandlingPolicy> exceptionHandlingPolicies =
             new HashMap<MethodSignature, ExceptionHandlingPolicy>();
 
@@ -183,7 +173,7 @@ public class ProxyConfigurationBuilder {
      * @param params
      */
     public void wrapDelegate(final Insertion prefix, final MethodSignature delegateMethod, final Object... params) {
-        targetSiteWrappers.put(delegateMethod, new WrapperSlot(prefix, params));
+        targetSiteWrappers.put(delegateMethod, new AdditionalArguments(prefix, params));
     }
 
     /**
@@ -205,7 +195,7 @@ public class ProxyConfigurationBuilder {
             // Q: where does this code belong?
             MethodInvoker invoker;
             if (targetSiteWrappers.containsKey(delegateMethod)) {
-                final WrapperSlot slot = targetSiteWrappers.get(delegateMethod);
+                final AdditionalArguments slot = targetSiteWrappers.get(delegateMethod);
                 invoker = new TargetSiteWrapper(delegateMethod, slot.insertion, slot.params);
             } else {
                 invoker = new MethodInvokerTemplate(delegateMethod);
@@ -264,7 +254,7 @@ public class ProxyConfigurationBuilder {
 
     private boolean areParameterTypesCompatible(final MethodSignature interfaceMethod, final MethodSignature delegateMethod) {
         if (targetSiteWrappers.containsKey(delegateMethod)) {
-            final WrapperSlot slot = targetSiteWrappers.get(delegateMethod);
+            final AdditionalArguments slot = targetSiteWrappers.get(delegateMethod);
             if (slot.insertion.equals(Insertion.Prefix)) {
                 if (slot.params.length < delegateMethod.getParameterTypes().length) {
                     final Class[] inputTypes = new Class[slot.params.length];
