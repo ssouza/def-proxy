@@ -3,13 +3,13 @@ package org.nebularis.defproxy.introspection;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.nebularis.defproxy.stubs.ComplexDelegate;
-import org.nebularis.defproxy.stubs.SimpleDelegate;
-import org.nebularis.defproxy.stubs.SimpleInterface;
+import org.nebularis.defproxy.configuration.ProxyConfigurationBuilder;
+import org.nebularis.defproxy.stubs.*;
 
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
 import static org.junit.Assert.assertThat;
+import static org.junit.Assert.fail;
 
 public class MethodSignatureTranslatorTestCase {
 
@@ -40,6 +40,25 @@ public class MethodSignatureTranslatorTestCase {
             assertThat(e.getInvalidMethodSignature(), is(equalTo(translator.getInterfaceMethod())));
             assertThat((Class<SimpleInterface>)e.getTargetType(),
                     is(equalTo((Class<SimpleInterface>)translator.getInterfaceType())));
+        }
+    }
+
+    @Test
+    public void invalidDelegateMethodNamesWillThrow() throws MappingException {
+        final MethodSignature interfaceMethod = new MethodSignature(String.class, "getName");
+        final MethodSignatureTranslator translator =
+                new MethodSignatureTranslator(interfaceMethod, MyProxyInterface.class, MyDelegate.class);
+
+        translator.setDelegateMethodNameOverride("getFlobby");
+
+        try {
+            translator.verifyMethodSignatures();
+            Assert.fail();
+        } catch (InvalidMethodMappingException e) {
+            assertThat(e.getInvalidMethodSignature(), is(equalTo(translator.getDelegateMethod())));
+            assertThat(translator.getDelegateMethod().getName(), is(equalTo("getFlobby")));
+            assertThat((Class<MyDelegate>)e.getTargetType(),
+                    is(equalTo((Class<MyDelegate>)translator.getDelegateType())));
         }
     }
 

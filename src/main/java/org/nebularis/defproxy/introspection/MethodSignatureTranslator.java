@@ -13,6 +13,7 @@ public class MethodSignatureTranslator {
     private final MethodSignature interfaceMethod;
     private final Class<?> interfaceType;
     private final Class<?> delegateType;
+    private String delegateMethodNameOverride;
 
     public MethodSignatureTranslator(final MethodSignature interfaceMethod,
                                      final Class<?> interfaceType, final Class<?> delegateType) {
@@ -44,17 +45,27 @@ public class MethodSignatureTranslator {
 
         // some (most ?) of these calculations currently live in the proxy configuration builder so move tests + code
 
-        /*final String name = (mappedName != null) ? mappedName : interfaceMethod.getName();
+        /*
         // final TypeConverter typeConverter = getTypeConverterIfAvailable();
         // AdditionalArguments additionalParams;
         final Class<?> returnType = figureOutTheReturnType();
         final Class[] parameterTypes = calculateParameterTypes();
         return new MethodSignature(returnType, name, parameterTypes);*/
 
-        return new MethodSignature(interfaceMethod);
+        final String name = (delegateMethodNameOverride != null) ?
+                    delegateMethodNameOverride : interfaceMethod.getName();
+        return new MethodSignature(interfaceMethod.getReturnType(), name, interfaceMethod.getParameterTypes());
     }
 
     public Class<?> getDelegateType() {
         return delegateType;
+    }
+
+    public String getDelegateMethodNameOverride() {
+        return delegateMethodNameOverride;
+    }
+
+    public void setDelegateMethodNameOverride(final String delegateMethodNameOverride) {
+        this.delegateMethodNameOverride = delegateMethodNameOverride;
     }
 }
