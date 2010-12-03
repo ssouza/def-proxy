@@ -28,8 +28,15 @@ public class MethodSignatureTranslator {
     public void verifyMethodSignatures() throws MappingException {
         /*final Method originCallee = */
         interfaceMethod.resolveToMethod(interfaceType);
-        /*final Method delegateTargetSite = */
-        getDelegateMethod().resolveToMethod(delegateType);
+        final MethodSignature delegateMethod = getDelegateMethod();
+
+        try {
+            /*final Method delegateTargetSite = */
+            delegateMethod.resolveToMethod(delegateType);
+        } catch (InvalidReturnTypeMappingException e) {
+            // why did this happen?
+            throw new IncompatibleMethodMappingException(interfaceMethod, delegateMethod);
+        }
     }
 
     public MethodSignature getInterfaceMethod() {

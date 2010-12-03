@@ -147,6 +147,7 @@ public class ProxyConfigurationBuilderTestCase extends AbstractJMockTestSupport 
         }
     }
 
+    @Ignore("Migrating to MethodSignatureTranslator - THIS TEST IS NO LONGER VALID")
     @Test
     public void invalidDelegateReturnTypesWillThrow() throws MappingException {
         final MethodSignature interfaceMethod = new MethodSignature(String.class, "getName");

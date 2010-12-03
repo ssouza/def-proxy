@@ -37,4 +37,12 @@ public class IncompatibleMethodMappingException extends MappingException {
         super(srcSig);
         this.targetSig = targetSig;
     }
+
+    public MethodSignature getSourceMethodSignature() {
+        return sig;
+    }
+
+    public MethodSignature getTargetMethodSignature() {
+        return targetSig;
+    }
 }

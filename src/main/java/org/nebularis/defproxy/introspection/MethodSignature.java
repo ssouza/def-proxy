@@ -83,11 +83,12 @@ public final class MethodSignature {
 
     public Method resolveToMethod(final Class<?> providerClass) throws InvalidMethodMappingException {
         final Method method = getMatchingAccessibleMethod(providerClass, name, parameterTypes);
-        if (method != null && isAssignable(returnType, method.getReturnType())) {
-            return method;
-        } else {
+        if (method == null) {
             throw new InvalidMethodMappingException(this, providerClass);
+        } else if (!isAssignable(returnType, method.getReturnType())) {
+            throw new InvalidReturnTypeMappingException(this, providerClass);
         }
+        return method;
     }
 
     /**

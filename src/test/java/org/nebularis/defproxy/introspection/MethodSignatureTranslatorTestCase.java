@@ -63,6 +63,24 @@ public class MethodSignatureTranslatorTestCase {
     }
 
     @Test
+    public void invalidDelegateReturnTypesWillThrow() throws MappingException {
+        final MethodSignature interfaceMethod = new MethodSignature(String.class, "getName");
+        final MethodSignatureTranslator translator =
+                new MethodSignatureTranslator(interfaceMethod, MyProxyInterface.class, MyDelegate.class);
+
+        // this mapping has a different return type!
+        translator.setDelegateMethodNameOverride("getInteger");
+
+        try {
+            translator.verifyMethodSignatures();
+            Assert.fail();
+        } catch (IncompatibleMethodMappingException e) {
+            assertThat(e.getSourceMethodSignature(), is(equalTo(translator.getInterfaceMethod())));
+            assertThat(e.getTargetMethodSignature(), is(equalTo(translator.getDelegateMethod())));
+        }
+    }
+
+    @Test
     public void invalidDelegateMethodSignaturesShouldThrow() throws MappingException {
         final MethodSignatureTranslator translator =
                 new MethodSignatureTranslator(new MethodSignature(void.class, "method1"),
