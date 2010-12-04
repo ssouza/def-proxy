@@ -21,3 +21,4 @@ axiom-integration-test/integration-test.log
 .settings
 .classpath
 .project
+target
